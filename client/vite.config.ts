@@ -33,9 +33,6 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    html: {
-      cspNonce: '%nonce%',
-    },
     plugins: [
       react(),
       tsconfigPaths(),

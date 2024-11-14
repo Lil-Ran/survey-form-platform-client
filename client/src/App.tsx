@@ -1,34 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Center, Loader, MantineProvider } from '@mantine/core'
+import { DatesProvider } from '@mantine/dates'
+import { ModalsProvider } from '@mantine/modals'
+import { Notifications } from '@mantine/notifications'
+import 'dayjs/locale/zh'
+import { FC, Suspense } from 'react'
+// import { ErrorBoundary } from 'react-error-boundary'
+import { useRoutes } from 'react-router-dom'
+// import { SWRConfig } from 'swr'
+import routes from '~react-pages'
+// import ErrorFallback from '@Components/ErrorFallback'
+// import { useCustomTheme } from '@Utils/ThemeOverride'
+// import { useBanner, localCacheProvider } from '@Utils/useConfig'
+// import { fetcher } from '@Api'
+import '@mantine/core/styles.css'
+import '@mantine/dates/styles.css'
+import '@mantine/dropzone/styles.css'
+import '@mantine/notifications/styles.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: FC = () => {
+  // TODO: useBanner()
+
+  // TODO: const { theme } = useCustomTheme()
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <MantineProvider /* TODO: theme={theme} */>
+      {/* TODO: <ErrorBoundary FallbackComponent={ErrorFallback}> */}
+      <Notifications zIndex={10000} />
+      <DatesProvider settings={{ locale: 'zh' }}>
+        <ModalsProvider labels={{ confirm: '确认', cancel: '取消' }}>
+          {/* TODO: <SWRConfig
+                value={{
+                  refreshInterval: 10000,
+                  provider: localCacheProvider,
+                  fetcher,
+                }}
+              > */}
+          <Suspense
+            fallback={
+              <Center h="100vh" w="100vw">
+                <Loader />
+              </Center>
+            }
+          >
+            {useRoutes(routes)}
+          </Suspense>
+          {/* </SWRConfig> */}
+        </ModalsProvider>
+      </DatesProvider>
+      {/*</ErrorBoundary>*/}
+    </MantineProvider>
   )
 }
 
