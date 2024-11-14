@@ -1,0 +1,15 @@
+import useSWR, { SWRConfiguration, MutatorOptions, mutate } from "swr";
+
+<%~ includeFile("@default/api.eta", it) %>
+
+const api = new Api();
+export default api;
+
+export const fetcher = async (path: string, query?: Record<string, unknown>) => {
+  return await api
+    .request({ path, query })
+    .then((res) => res.data)
+    .catch((err) => {
+      throw err.response.data;
+    });
+};
