@@ -82,7 +82,6 @@ const enableSWR = _.upperCase(method) === "GET" && type !== "void";
   use<%~ route.routeName.usage.charAt(0).toUpperCase() %><%~ route.routeName.usage.slice(1) %><%~ route.namespace ? ': ' : ' = ' %>(<%~ wrapperArgs %>)<%~ config.toJS ? `: ${describeReturnType()}` : "" %> =>
     useSWR<<%~ type %>, <%~  errorType %>>(doFetch ?
         <% if (!queryTmpl) { %>`<%~ path %>`<% } else { %>[`<%~ path %>`, <%~ queryTmpl %>]<% } %> : null, options),
-
 /**
 <%~ routeDocs.description %>
 
