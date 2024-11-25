@@ -37,7 +37,7 @@
     "react-dom": "^18.3.1",
     "react-error-boundary": "^4.1.2",
     "react-router": "^6.28.0",
-    "react-router-dom": "^6.28.0",
+    "react-router-dom": "^7.0.1",
     "recharts": "^2.13.3",
     "swr": "^2.2.5"
   },
