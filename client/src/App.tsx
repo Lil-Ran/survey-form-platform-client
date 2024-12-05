@@ -4,14 +4,9 @@ import { ModalsProvider } from '@mantine/modals'
 import { Notifications } from '@mantine/notifications'
 import 'dayjs/locale/zh'
 import { FC, Suspense } from 'react'
-// import { ErrorBoundary } from 'react-error-boundary'
-import { useRoutes } from 'react-router-dom'
-// import { SWRConfig } from 'swr'
+import { BrowserRouter as Router, Route, Routes, useRoutes } from 'react-router-dom'
 import routes from '~react-pages'
-// import ErrorFallback from '@Components/ErrorFallback'
-// import { useCustomTheme } from '@Utils/ThemeOverride'
-// import { useBanner, localCacheProvider } from '@Utils/useConfig'
-// import { fetcher } from '@Api'
+import Login from './pages/login'
 import '@mantine/core/styles.css'
 import '@mantine/dates/styles.css'
 import '@mantine/dropzone/styles.css'
@@ -35,6 +30,13 @@ const App: FC = () => {
                   fetcher,
                 }}
               > */}
+          <Router>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              {/* 其他路由 */}
+              {useRoutes(routes)}
+            </Routes>
+          </Router>
           <Suspense
             fallback={
               <Center h="100vh" w="100vw">
@@ -42,7 +44,6 @@ const App: FC = () => {
               </Center>
             }
           >
-            {useRoutes(routes)}
           </Suspense>
           {/* </SWRConfig> */}
         </ModalsProvider>
