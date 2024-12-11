@@ -6,9 +6,8 @@ import SingleTextFillIn from './SingleTextFillIn'; // 单项文本填空组件
 import MultiTextFillIn from './MultiTextFillIn'; // 多项文本填空组件
 import SingleNumFillIn from './SingleNumFillIn'; // 单项数字填空
 import MultiNumFillIn from './MultiNumFillIn'; // 多项数字填空
-import { QuestionModel } from '../../models/QuestionModel'; // 问题的数据模型
+import { QuestionModel } from '../../models/QuestionModel';
 
-// 定义组件的 Props
 interface QuestionEditorProps {
   question: QuestionModel; // 当前问题的数据
   onUpdate: (updatedQuestion: QuestionModel) => void; // 更新问题的回调函数
@@ -43,7 +42,7 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpdate, onD
             onDelete={onDelete} // 删除回调
           />
         );
-      case 'MultiTextFillIn': // 如果是单选题
+      case 'MultiTextFillIn': // 如果是多项文本填空
         return (
           <MultiTextFillIn
             question={question} // 当前问题数据
@@ -51,7 +50,7 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpdate, onD
             onDelete={onDelete} // 删除回调
           />
         );
-      case 'SingleNumFillIn': // 如果是单选题
+      case 'SingleNumFillIn': // 如果是单项数字填空
         return (
           <SingleNumFillIn
             question={question} // 当前问题数据
@@ -59,7 +58,7 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpdate, onD
             onDelete={onDelete} // 删除回调
           />
         );
-      case 'MultiNumFillIn': // 如果是单选题
+      case 'MultiNumFillIn': // 如果是多项数字填空
         return (
           <MultiNumFillIn
             question={question} // 当前问题数据
