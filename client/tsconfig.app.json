@@ -14,6 +14,15 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@Api": ["src/Api.ts"],
+      "@App": ["src/App"],
+      "@Components/*": ["src/components/*"],
+      "@Pages/*": ["src/pages/*"],
+      "@Styles/*": ["src/styles/components/*", "src/styles/shared/*", "src/styles/pages/*"],
+      "@Utils/*": ["src/utils/*"],
+    },
 
     /* Linting */
     "strict": true,
