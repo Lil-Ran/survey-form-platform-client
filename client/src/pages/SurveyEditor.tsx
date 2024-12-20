@@ -225,7 +225,7 @@ const SurveyEditor: React.FC = () => {
             <Box key={question.QuestionID} style={{ marginBottom: '2rem' }}>
               {/* 问题编号 */}
               <Box style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                问题 {index + 1}
+                问题 {index + 1} ({question.QuestionLabel})
               </Box>
               <QuestionEditor
                 question={question}
