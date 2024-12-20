@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { TextInput, Text } from '@mantine/core';
 import { QuestionModel } from '../../models/QuestionModel';
 
-interface MultiTextFillInProps {
+interface MultiTextFillInDisplayProps {
   question: QuestionModel; // 问题数据
   onAnswerChange: (values: string[]) => void; // 回答变化的回调
 }
 
-const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onAnswerChange }) => {
+const MultiTextFillInDisplay: React.FC<MultiTextFillInDisplayProps> = ({ question, onAnswerChange }) => {
   const [values, setValues] = useState<string[]>(new Array(question.TextFillIns.length).fill('')); // 每个文本填空的值
 
   // 处理输入变化
@@ -21,7 +21,7 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onAnswerCha
   return (
     <div>
       <Text size="lg">{question.Title}</Text>
-      <Text size="sm" color="gray" style={{ marginTop: '0.5rem' }}>{question.Explanation}</Text>
+      <Text size="sm" style={{ marginTop: '0.5rem' }}>{question.Explanation}</Text>
 
       <div style={{ marginTop: '1rem' }}>
         {/* 渲染每个文本填空 */}
@@ -39,4 +39,4 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onAnswerCha
   );
 };
 
-export default MultiTextFillIn;
+export default MultiTextFillInDisplay;

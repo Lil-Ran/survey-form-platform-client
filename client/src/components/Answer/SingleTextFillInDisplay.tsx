@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { TextInput, Text } from '@mantine/core';
 import { QuestionModel } from '../../models/QuestionModel';
 
-interface SingleTextFillInProps {
+interface SingleTextFillInDisplayProps {
   question: QuestionModel; // 问题数据
   onAnswerChange: (value: string) => void; // 回答变化的回调
 }
 
-const SingleTextFillIn: React.FC<SingleTextFillInProps> = ({ question, onAnswerChange }) => {
+const SingleTextFillInDisplay: React.FC<SingleTextFillInDisplayProps> = ({ question, onAnswerChange }) => {
   const [value, setValue] = useState<string>(''); // 填写的文本
 
   // 处理输入变化
@@ -20,7 +20,7 @@ const SingleTextFillIn: React.FC<SingleTextFillInProps> = ({ question, onAnswerC
   return (
     <div>
       <Text size="lg">{question.Title}</Text>
-      <Text size="sm" color="gray" style={{ marginTop: '0.5rem' }}>{question.Explanation}</Text>
+      <Text size="sm" style={{ marginTop: '0.5rem' }}>{question.Explanation}</Text>
 
       <div style={{ marginTop: '1rem' }}>
         <TextInput
@@ -34,4 +34,4 @@ const SingleTextFillIn: React.FC<SingleTextFillInProps> = ({ question, onAnswerC
   );
 };
 
-export default SingleTextFillIn;
+export default SingleTextFillInDisplay;

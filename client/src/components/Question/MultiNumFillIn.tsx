@@ -29,7 +29,7 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
     };
 
     const explanation = question.Explanation || '';
-    const placeholder = ` ______ `;
+    const placeholder = `[填空]`; // 占位符
 
     const newExplanation =
       explanation.slice(0, explanationCursor) +
@@ -41,6 +41,9 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
       Explanation: newExplanation,
       NumFillIns: [...question.NumFillIns, newNumFillIn],
     });
+    
+    // 更新光标位置
+    setExplanationCursor(explanationCursor + placeholder.length);
   };
 
   const handleCursorPosition = (e: React.MouseEvent<HTMLTextAreaElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -48,9 +51,28 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
     setExplanationCursor(target.selectionStart || 0);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const explanation = question.Explanation || '';
+    const placeholder = '[填空]';
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      const cursorPosition = explanationCursor;
+
+      // 检查光标是否在占位符的开头
+      if (
+        cursorPosition > 0 &&
+        explanation.slice(cursorPosition - placeholder.length, cursorPosition) === placeholder
+      ) {
+        e.preventDefault(); // 阻止默认的删除行为
+        // 删除整个占位符
+        const newExplanation = explanation.slice(0, cursorPosition - placeholder.length) + explanation.slice(cursorPosition);
+        onUpdate({ ...question, Explanation: newExplanation });
+        setExplanationCursor(cursorPosition - placeholder.length); // 更新光标位置
+      }
+    }
+  };
+
   return (
     <Flex direction="column" gap="sm">
-      {/* 标题 */}
       <TextInput
         label="题目标题"
         value={question.Title}
@@ -64,7 +86,6 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
         required
       />
 
-      {/* 问题说明 */}
       <Textarea
         label="问题说明"
         value={question.Explanation}
@@ -73,6 +94,7 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
         minRows={2}
         onMouseUp={handleCursorPosition}
         onKeyUp={handleCursorPosition}
+        onKeyDown={handleKeyDown} // 添加对按键事件的监听
         labelProps={{
           style: {
             fontSize: '1.5rem', // 设置标签字体大小
@@ -80,7 +102,6 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
         }}
       />
 
-      {/* 按钮容器 */}
       <Flex justify="space-between" style={{ marginTop: '1rem' }}>
         <Button variant="light" color="blue" onClick={handleAddNumFillIn}>
           添加数字填空项

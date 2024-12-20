@@ -25,7 +25,7 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
       TextFillInID: Math.random().toString(36).substr(2, 9),
     };
     const explanation = question.Explanation || '';
-    const placeholder = ` ______ `;
+    const placeholder = `[填空]`; // 使用标识符作为占位符
 
     const newExplanation =
       explanation.slice(0, explanationCursor) +
@@ -37,11 +37,31 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
       Explanation: newExplanation,
       TextFillIns: [...question.TextFillIns, newTextFillIn],
     });
+
+    // 更新光标位置
+    setExplanationCursor(explanationCursor + placeholder.length);
   };
 
   const handleCursorPosition = (e: React.MouseEvent<HTMLTextAreaElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
     const target = e.target as HTMLTextAreaElement;
     setExplanationCursor(target.selectionStart || 0);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const explanation = question.Explanation || '';
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      const cursorPosition = explanationCursor;
+
+      // 检查光标是否在“[填空]”的开头
+      const placeholder = '[填空]';
+      if (cursorPosition > 0 && explanation.slice(cursorPosition - placeholder.length, cursorPosition) === placeholder) {
+        e.preventDefault(); // 阻止默认的删除行为
+        // 删除整个占位符
+        const newExplanation = explanation.slice(0, cursorPosition - placeholder.length) + explanation.slice(cursorPosition);
+        onUpdate({ ...question, Explanation: newExplanation });
+        setExplanationCursor(cursorPosition - placeholder.length); // 更新光标位置
+      }
+    }
   };
 
   return (
@@ -53,7 +73,7 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
         placeholder="请输入题目标题"
         labelProps={{
           style: {
-            fontSize: '1.5rem', // 设置标签字体大小
+            fontSize: '1.5rem',
           },
         }}
         required
@@ -66,21 +86,21 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
         minRows={2}
         onMouseUp={handleCursorPosition}
         onKeyUp={handleCursorPosition}
+        onKeyDown={handleKeyDown} // 添加对按键事件的监听
         labelProps={{
           style: {
-            fontSize: '1.5rem', // 设置标签字体大小
+            fontSize: '1.5rem',
           },
         }}
       />
 
-      {/* 按钮容器 */}
       <Flex justify="space-between" style={{ marginTop: '1rem' }}>
-          <Button variant="light" color="blue" onClick={handleAddTextFillIn}>
-            添加文本填空项
-          </Button>
-          <Button color="red" variant="outline" onClick={onDelete} >
-            删除问题
-          </Button>
+        <Button variant="light" color="blue" onClick={handleAddTextFillIn}>
+          添加文本填空项
+        </Button>
+        <Button color="red" variant="outline" onClick={onDelete}>
+          删除问题
+        </Button>
       </Flex>
     </Flex>
   );
