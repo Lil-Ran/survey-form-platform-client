@@ -16,6 +16,7 @@ import {
 } from '@mantine/core';
 import classes from '../styles/surveyTableSort.module.css';
 import dayjs from 'dayjs';
+import { QRCodeCanvas } from 'qrcode.react';  // 引入QRCode库
 
 interface RowData {
   surveyId: string;
@@ -135,6 +136,8 @@ export function TableSort({ filter }: { filter: (row: RowData) => boolean }) {
   const itemsPerPage = 15;
   const [modalOpened, setModalOpened] = useState(false);
   const [newSurveyTitle, setNewSurveyTitle] = useState('');
+  const [shareModalOpened, setShareModalOpened] = useState(false); // 用于控制分享二维码Modal的状态
+  const [shareLink, setShareLink] = useState(''); // 用于保存生成的分享链接
 
   const setSorting = (field: keyof RowData) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
@@ -153,6 +156,16 @@ export function TableSort({ filter }: { filter: (row: RowData) => boolean }) {
     // 处理创建问卷的逻辑
     console.log('创建问卷:', newSurveyTitle);
     setModalOpened(false);
+  };
+
+  const generateShareLink = (surveyId: string) => {
+    return `https://survey/${surveyId}`; // 这里用实际的链接替换
+  };
+
+  const handleShareClick = (surveyId: string) => {
+    const link = generateShareLink(surveyId);
+    setShareLink(link);
+    setShareModalOpened(true); // 打开分享Modal
   };
 
   const filteredData = sortedData.filter(filter);
@@ -177,7 +190,13 @@ export function TableSort({ filter }: { filter: (row: RowData) => boolean }) {
             <Button variant="subtle" size="compact-xs"><IconEye size={16} /></Button>
           </Tooltip>
           <Tooltip label="分享" withArrow>
-            <Button variant="subtle" size="compact-xs"><IconShare size={16} /></Button>
+            <Button
+              variant="subtle"
+              size="compact-xs"
+              onClick={() => handleShareClick(row.surveyId)} // 点击分享按钮时触发
+            >
+              <IconShare size={16} />
+            </Button>
           </Tooltip>
           <Tooltip label="数据" withArrow>
             <Button variant="subtle" size="compact-xs"><IconDatabase size={16} /></Button>
@@ -254,6 +273,49 @@ export function TableSort({ filter }: { filter: (row: RowData) => boolean }) {
           <Button variant="outline" onClick={() => setModalOpened(false)} style={{ width: '120px' }}>取消</Button>
         </Group>
       </Modal>
+      <Modal
+        opened={shareModalOpened}
+        onClose={() => setShareModalOpened(false)}
+        title="分享问卷"
+        centered
+        size={600} // 使用自定义的像素值
+      >
+      <Group align="center">
+        <Text size="sm" mb="md">
+          扫描二维码或复制链接分享此问卷：
+        </Text>
+        {/* 生成二维码 */}
+        <Center>
+          {shareLink && (
+            <QRCodeCanvas
+              value={shareLink}
+              size={512} // 设置二维码大小
+              level="M" // 纠错等级，可选 "L", "M", "Q", "H"
+              includeMargin // 是否包括二维码的外边距
+            />
+          )}
+        </Center>
+        <TextInput
+          value={shareLink}
+          readOnly
+          mt="md"
+          label="分享链接"
+          description="点击复制链接"
+          style={{ width: '80%' }} // 设置宽度为父容器的 100%
+          rightSection={
+            <div style={{ width: '5px' }}> {/* 包裹按钮并控制宽度 */}
+              <Button size="sm" 
+                onClick={() => {
+                  navigator.clipboard.writeText(shareLink);
+                  alert('复制成功');
+                }}>
+                复制
+              </Button>
+            </div>
+          }
+        />
+      </Group>
+    </Modal>
     </ScrollArea>
   );
 }
