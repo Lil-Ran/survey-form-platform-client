@@ -17,8 +17,10 @@ import {
 import classes from '../styles/surveyTableSort.module.css';
 import dayjs from 'dayjs';
 import { QRCodeCanvas } from 'qrcode.react';  // 引入QRCode库
+import SurveyPreview from './SurveyPreview'; // 引入SurveyPreview组件
+import { QuestionModel } from 'src/models/QuestionModel';
 
-interface RowData {
+export interface RowData {
   surveyId: string;
   accessId: string;
   title: string;
@@ -30,6 +32,7 @@ interface RowData {
   lastUpdateTime: string;
   lastUpdataUserID: string;
   lastUpdateUserName: string;
+  questions: QuestionModel[];
 }
 
 interface ThProps {
@@ -101,6 +104,7 @@ const exampleRow: RowData = {
   lastUpdateTime: '2024-11-15',
   lastUpdataUserID: '0000',
   lastUpdateUserName: '李四爷',
+  questions: [], // Add an empty array for questions
 };
 
 const data: RowData[] = Array.from({ length: 50 }, (_, index) => ({
@@ -138,6 +142,8 @@ export function TableSort({ filter }: { filter: (row: RowData) => boolean }) {
   const [newSurveyTitle, setNewSurveyTitle] = useState('');
   const [shareModalOpened, setShareModalOpened] = useState(false); // 用于控制分享二维码Modal的状态
   const [shareLink, setShareLink] = useState(''); // 用于保存生成的分享链接
+  const [previewModalOpened, setPreviewModalOpened] = useState(false); // 用于控制预览Modal的状态
+  const [previewSurvey, setPreviewSurvey] = useState<RowData | null>(null); // 用于保存预览的问卷数据
 
   const setSorting = (field: keyof RowData) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
@@ -168,6 +174,11 @@ export function TableSort({ filter }: { filter: (row: RowData) => boolean }) {
     setShareModalOpened(true); // 打开分享Modal
   };
 
+  const handlePreviewClick = (survey: RowData) => {
+    setPreviewSurvey(survey);
+    setPreviewModalOpened(true); // 打开预览Modal
+  };
+
   const filteredData = sortedData.filter(filter);
   const paginatedData = filteredData.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
 
@@ -187,7 +198,13 @@ export function TableSort({ filter }: { filter: (row: RowData) => boolean }) {
             <Button variant="subtle" size="compact-xs"><IconEdit size={16} /></Button>
           </Tooltip>
           <Tooltip label="预览" withArrow>
-            <Button variant="subtle" size="compact-xs"><IconEye size={16} /></Button>
+            <Button
+              variant="subtle"
+              size="compact-xs"
+              onClick={() => handlePreviewClick(row)} // 点击预览按钮时触发
+            >
+              <IconEye size={16} />
+            </Button>
           </Tooltip>
           <Tooltip label="分享" withArrow>
             <Button
@@ -316,6 +333,15 @@ export function TableSort({ filter }: { filter: (row: RowData) => boolean }) {
         />
       </Group>
     </Modal>
+    <Modal
+        opened={previewModalOpened}
+        onClose={() => setPreviewModalOpened(false)}
+        title="问卷预览"
+        centered
+        size="lg"
+      >
+        {previewSurvey && <SurveyPreview survey={previewSurvey} />}
+      </Modal>
     </ScrollArea>
   );
 }
