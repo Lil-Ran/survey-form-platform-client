@@ -83,7 +83,7 @@ const Login = () => {
           />
           <Group justify="space-between" mt="lg">
             <Checkbox label="自动登录" />
-            <Anchor component="button" size="sm" onClick={()=>{void navigate('/forgotpassword')}}>
+            <Anchor component="button" size="sm" onClick={()=>{void navigate('/forgotpassword');}}>
               忘记密码?
             </Anchor>
           </Group>
