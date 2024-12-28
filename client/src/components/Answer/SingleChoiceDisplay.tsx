@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Text } from '@mantine/core';
-import { QuestionModel} from '../../models/QuestionModel';
+import { QuestionModel } from '../../models/QuestionModel';
+import { Radio, Text } from '@mantine/core';
 
 interface SingleChoiceDisplayProps {
   question: QuestionModel; // 问题数据
@@ -19,21 +19,25 @@ const SingleChoiceDisplay: React.FC<SingleChoiceDisplayProps> = ({ question, onA
   return (
     <div>
       <Text size="lg">{question.Title}</Text>
-      <Text size="sm" color="gray" style={{ marginTop: '0.5rem' }}>{question.Explanation}</Text>
+      <Text size="sm" style={{ marginTop: '0.5rem' }}>{question.Explanation}</Text>
 
       <div style={{ marginTop: '1rem' }}>
-        {/* 渲染每个选项 */}
-        {question.Options.map((option) => (
-          <Button
-            key={option.OptionID}
-            variant={selectedOption === option.OptionID ? 'filled' : 'light'} // 选中的选项变为填充样式
-            fullWidth
-            style={{ marginBottom: '0.5rem' }}
-            onClick={() => handleOptionSelect(option.OptionID)}
-          >
-            {option.OptionContent}
-          </Button>
-        ))}
+        {/* 使用 Radio.Group 来处理单选逻辑 */}
+        <Radio.Group
+          value={selectedOption} // 当前选中的值
+          onChange={handleOptionSelect} // 选项变化时调用的回调
+          style={{ display: 'flex', flexDirection: 'column' }}
+        >
+          {/* 渲染每个选项 */}
+          {question.Options.map((option) => (
+            <Radio
+              key={option.OptionID}
+              value={option.OptionID}
+              label={option.OptionContent} // 显示选项内容
+              style={{ marginBottom: '0.5rem' }}
+            />
+          ))}
+        </Radio.Group>
       </div>
     </div>
   );

@@ -70,6 +70,35 @@ const exampleSurvey: Survey = {
 
     {
       QuestionID: "q4",
+      Title: "请排出您最喜欢的编程语言前三名",
+      QuestionType: "MultiTextFillIn",
+      QuestionLabel: "多项文本填空题",
+      Explanation: "第一名:[填空], 第二名:[填空], 第三名:[填空]\n",
+      IsRequire: true,
+      IsShow: true,
+      LeastChoice: 1,
+      MaxChoice: 1,
+      SurveyID: "survey1",
+      Options: [],
+      NumFillIns: [],
+      TextFillIns: [
+        {
+          TextFillInID: "text1",
+          TextContent: "",
+        },
+        {
+          TextFillInID: "text2",
+          TextContent: "",
+        },
+        {
+          TextFillInID: "text3",
+          TextContent: "",
+        }
+      ],
+    },
+
+    {
+      QuestionID: "q5",
       Title: "请输入您的年龄",
       QuestionType: "SingleNumFillIn",
       QuestionLabel: "单项数字填空题",
@@ -93,24 +122,34 @@ const exampleSurvey: Survey = {
     },
 
     {
-      QuestionID: "q5",
-      Title: "您对本问卷的建议？",
-      QuestionType: "SingleTextFillIn",
-      QuestionLabel: "单项文本填空题",
-      Explanation: "请填写您的建议，我们会不断改进。",
+      QuestionID: "q6",
+      Title: "请输入您家里人的年龄",
+      QuestionType: "MultiNumFillIn",
+      QuestionLabel: "多项数字填空题",
+      Explanation: "爸爸:[填空], 妈妈:[填空]",
       IsRequire: false,
       IsShow: true,
       LeastChoice: 1,
       MaxChoice: 1,
       SurveyID: "survey1",
       Options: [],
-      NumFillIns: [],
-      TextFillIns: [
+      NumFillIns: [
         {
-          TextFillInID: "text2",
-          TextContent: "",
+          NumFillInID: "num2",
+          NumContent: 25,
+          LeastNum: 18,
+          MaxNum: 100,
+          Precision: 0,
+        },
+        {
+          NumFillInID: "num3",
+          NumContent: 25,
+          LeastNum: 18,
+          MaxNum: 100,
+          Precision: 0,
         }
       ],
+      TextFillIns: [],
     } 
   ]
 };

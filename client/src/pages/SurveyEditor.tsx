@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Box, Button, Flex, TextInput } from '@mantine/core';
+import React, { useState, useRef } from 'react';
+import { Box, Button, Flex, TextInput, Text } from '@mantine/core';
 import QuestionEditor from '../components/Question/QuestionEditor';
 import { QuestionModel } from '../models/QuestionModel';
 import { Survey } from '../models/SurveyModel';
@@ -10,6 +10,8 @@ const SurveyEditor: React.FC = () => {
     title: '新建问卷',
     questions: [],
   });
+
+  const questionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({}); // 用于存储每个问题的引用
 
   // 添加新问题
   const handleAddQuestion = (type: string) => {
@@ -90,6 +92,16 @@ const SurveyEditor: React.FC = () => {
     // 在此处添加保存逻辑，例如发送到服务器或保存到本地存储
   };
 
+  const scrollToQuestion = (questionID: string) => {
+    const questionElement = questionRefs.current[questionID];
+    if (questionElement) {
+      questionElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center', // 使元素滚动到视口中央
+      });
+    }
+  };
+
   return (
     <>
       {/* 顶部固定的导航栏 */}
@@ -98,7 +110,7 @@ const SurveyEditor: React.FC = () => {
           position: 'fixed', // 固定位置
           top: 0, // 距离顶部为 0
           width: '100%', // 占满屏幕宽度
-          backgroundColor: '#2c3e50', // 深色背景
+          backgroundColor: '#276AB7', // 深色背景
           padding: '1.5rem', // 内边距
           color: '#ffffff', // 白色文字
           textAlign: 'center', // 居中对齐
@@ -182,67 +194,108 @@ const SurveyEditor: React.FC = () => {
         </Button.Group>
       </Flex>
 
-      {/* 问卷列表的背景容器 */}
-      <Box
-        style={{
-          backgroundColor: '#f7f7f7',
-          minHeight: '100vh',
-          display: 'flex',
-          justifyContent: 'center',
-          padding: '2rem 0',
-          marginTop: '12rem', // 确保内容在导航栏和工具栏下方
-        }}
-      >
-        {/* 问卷编辑区域 */}
+      <Flex>
+        {/* 左侧题目列表 */}
         <Box
           style={{
-            width: '1600px', // 固定宽度
-            backgroundColor: '#ffffff', // 白色背景
-            borderRadius: '8px', // 圆角
-            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // 添加阴影
-            padding: '2rem', // 内边距
-            fontSize: '2rem', // 字体大小
+            width: '15%',
+            backgroundColor: '#f0f0f0',
+            padding: '1rem',
+            position: 'fixed',
+            top: '12rem',
+            left: 0,
+            height: 'calc(100vh - 12rem)',
+            overflowY: 'auto',
           }}
         >
-          {/* 问卷标题 */}
-          <TextInput
-            label="问卷标题"
-            value={survey.title}
-            onChange={(e) => setSurvey({ ...survey, title: e.target.value })}
-            placeholder="请输入问卷标题"
-            style={{ marginBottom: '1.5rem' }}
-            labelProps={{
-              style: {
-                fontSize: '2rem', // 设置标签字体大小
-                fontWeight: 'bold', // 可选: 设置标签加粗
-              },
-            }}
-            required
-          />
-
-          {/* 问题列表 */}
+          <Text style={{ fontSize: '40px', marginBottom: '1rem', textAlign: 'center'}}>
+            题目列表
+          </Text>
           {survey.questions.map((question, index) => (
-            <Box key={question.QuestionID} style={{ marginBottom: '2rem' }}>
-              {/* 问题编号 */}
-              <Box style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                问题 {index + 1}
-              </Box>
-              <QuestionEditor
-                question={question}
-                onUpdate={handleUpdateQuestion}
-                onDelete={() => handleDeleteQuestion(question.QuestionID)}
-              />
-            </Box>
+            <Button
+              key={question.QuestionID}
+              variant="subtle"
+              fullWidth
+              onClick={() => scrollToQuestion(question.QuestionID)}
+              style={{
+                marginBottom: '0.5rem',
+                height: '50px', // 设置按钮高度
+                fontSize: '25px', // 设置字体大小
+              }}
+            >
+              问题 {index + 1}
+            </Button>
           ))}
-
-          {/* 空状态提示 */}
-          {survey.questions.length === 0 && (
-            <Box style={{ textAlign: 'center', marginTop: '2rem', color: '#888' }}>
-              暂无问题，请添加新问题。
-            </Box>
-          )}
         </Box>
-      </Box>
+
+        {/* 问卷列表的背景容器 */}
+        <Box
+          style={{
+            backgroundColor: '#f7f7f7',
+            minHeight: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            padding: '2rem 0',
+            marginTop: '12rem', // 确保内容在导航栏和工具栏下方
+            marginLeft: '200px', // 为左侧列表留出空间
+            width: 'calc(100% - 200px)', // 减去左侧列表的宽度
+          }}
+        >
+          {/* 问卷编辑区域 */}
+          <Box
+            style={{
+              width: '1600px', // 固定宽度
+              backgroundColor: '#ffffff', // 白色背景
+              borderRadius: '8px', // 圆角
+              boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // 添加阴影
+              padding: '2rem', // 内边距
+              fontSize: '2rem', // 字体大小
+            }}
+          >
+            {/* 问卷标题 */}
+            <TextInput
+              label="问卷标题"
+              value={survey.title}
+              onChange={(e) => setSurvey({ ...survey, title: e.target.value })}
+              placeholder="请输入问卷标题"
+              style={{ marginBottom: '1.5rem' }}
+              labelProps={{
+                style: {
+                  fontSize: '2rem', // 设置标签字体大小
+                  fontWeight: 'bold', // 可选: 设置标签加粗
+                },
+              }}
+              required
+            />
+
+            {/* 问题列表 */}
+            {survey.questions.map((question, index) => (
+              <Box
+                key={question.QuestionID}
+                style={{ marginBottom: '2rem' }}
+                ref={(el) => (questionRefs.current[question.QuestionID] = el)}
+              >
+                {/* 问题编号 */}
+                <Box style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                  问题 {index + 1} ({question.QuestionLabel})
+                </Box>
+                <QuestionEditor
+                  question={question}
+                  onUpdate={handleUpdateQuestion}
+                  onDelete={() => handleDeleteQuestion(question.QuestionID)}
+                />
+              </Box>
+            ))}
+
+            {/* 空状态提示 */}
+            {survey.questions.length === 0 && (
+              <Box style={{ textAlign: 'center', marginTop: '2rem', color: '#888' }}>
+                暂无问题，请添加新问题。
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Flex>
     </>
   );
 };
