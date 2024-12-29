@@ -12,6 +12,7 @@
     "genapi": "swagger-typescript-api -p ./openapi.json -t ./api-templates -o ./src --module-name-first-tag --sort-routes"
   },
   "dependencies": {
+    "@ant-design/charts": "^2.2.6",
     "@mantine/charts": "^7.15.1",
     "@mantine/core": "^7.15.1",
     "@mantine/dates": "^7.15.1",
@@ -37,6 +38,8 @@
     "echarts-for-react": "^3.0.2",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-d3-cloud": "^1.0.6",
     "react-dom": "^18.3.1",
     "react-error-boundary": "^4.1.2",
     "react-router": "^7.0.2",

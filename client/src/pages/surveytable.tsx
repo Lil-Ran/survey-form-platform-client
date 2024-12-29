@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { IconChevronDown, IconChevronUp, IconSearch, IconSelector, IconSettings, IconEdit, IconEye, IconShare, IconDatabase, IconTrash } from '@tabler/icons-react';
 import {
   Center,
@@ -16,8 +16,8 @@ import {
 } from '@mantine/core';
 import classes from '../styles/surveyTableSort.module.css';
 import dayjs from 'dayjs';
-import { QRCodeCanvas } from 'qrcode.react';  // 引入QRCode库
-import SurveyPreview from './SurveyPreview'; // 引入SurveyPreview组件
+const QRCodeCanvas = lazy(() => import('qrcode.react').then(module => ({ default: module.QRCodeCanvas }))); // 懒加载QRCode库
+const SurveyPreview = lazy(() => import('./SurveyPreview')); // 懒加载SurveyPreview组件
 import { QuestionModel } from 'src/models/QuestionModel';
 
 export interface RowData {
@@ -297,50 +297,55 @@ export function TableSort({ filter }: { filter: (row: RowData) => boolean }) {
         centered
         size={600} // 使用自定义的像素值
       >
-      <Group align="center">
-        <Text size="sm" mb="md">
-          扫描二维码或复制链接分享此问卷：
-        </Text>
-        {/* 生成二维码 */}
-        <Center>
-          {shareLink && (
-            <QRCodeCanvas
+        <Suspense fallback={<div>Loading...</div>}>
+          <Group align="center">
+            <Text size="sm" mb="md">
+              扫描二维码或复制链接分享此问卷：
+            </Text>
+            {/* 生成二维码 */}
+            <Center>
+              {shareLink && (
+                <QRCodeCanvas
+                  value={shareLink}
+                  size={512} // 设置二维码大小
+                  level="M" // 纠错等级，可选 "L", "M", "Q", "H"
+                  includeMargin // 是否包括二维码的外边距
+                />
+              )}
+            </Center>
+            <TextInput
               value={shareLink}
-              size={512} // 设置二维码大小
-              level="M" // 纠错等级，可选 "L", "M", "Q", "H"
-              includeMargin // 是否包括二维码的外边距
+              readOnly
+              mt="md"
+              label="分享链接"
+              description="点击复制链接"
+              style={{ width: '80%' }} // 设置宽度为父容器的 100%
+              rightSection={
+                <div style={{ width: '5px' }}> {/* 包裹按钮并控制宽度 */}
+                  <Button size="sm" 
+                    onClick={() => {
+                      navigator.clipboard.writeText(shareLink)
+                        .then(() => alert('复制成功'))
+                        .catch((err) => alert('复制失败: ' + err));
+                    }}>
+                    复制
+                  </Button>
+                </div>
+              }
             />
-          )}
-        </Center>
-        <TextInput
-          value={shareLink}
-          readOnly
-          mt="md"
-          label="分享链接"
-          description="点击复制链接"
-          style={{ width: '80%' }} // 设置宽度为父容器的 100%
-          rightSection={
-            <div style={{ width: '5px' }}> {/* 包裹按钮并控制宽度 */}
-              <Button size="sm" 
-                onClick={() => {
-                  navigator.clipboard.writeText(shareLink);
-                  alert('复制成功');
-                }}>
-                复制
-              </Button>
-            </div>
-          }
-        />
-      </Group>
-    </Modal>
-    <Modal
+          </Group>
+        </Suspense>
+      </Modal>
+      <Modal
         opened={previewModalOpened}
         onClose={() => setPreviewModalOpened(false)}
         title="问卷预览"
         centered
         size="lg"
       >
-        {previewSurvey && <SurveyPreview survey={previewSurvey} />}
+        <Suspense fallback={<div>Loading...</div>}>
+          {previewSurvey && <SurveyPreview survey={previewSurvey} />}
+        </Suspense>
       </Modal>
     </ScrollArea>
   );
