@@ -3,6 +3,7 @@ import { Box, Button, Flex, TextInput, Text } from '@mantine/core';
 import QuestionEditor from '../components/Question/QuestionEditor';
 import { QuestionModel } from '../models/QuestionModel';
 import { Survey } from '../models/SurveyModel';
+import { saveAs } from 'file-saver'; // 引入file-saver库
 
 const SurveyEditor: React.FC = () => {
   const [survey, setSurvey] = useState<Survey>({
@@ -17,7 +18,7 @@ const SurveyEditor: React.FC = () => {
   const handleAddQuestion = (type: string) => {
     const newQuestion: QuestionModel = {
       Explanation: '',
-      IsRequire: false,
+      IsRequire: true,
       IsShow: true,
       LeastChoice: 0,
       MaxChoice: type === 'MultiChoice' || type === 'MultiTextFillIn' || type === 'MultiNumFillIn' ? 1 : 0,
@@ -44,9 +45,7 @@ const SurveyEditor: React.FC = () => {
         break;
       case 'MultiTextFillIn':
         newQuestion.QuestionLabel = '多项文本填空';
-        newQuestion.TextFillIns = [
-          { TextContent: '', TextFillInID: Math.random().toString(36).substr(2, 9) },
-        ];
+        newQuestion.TextFillIns = [];
         break;
       case 'SingleNumFillIn':
         newQuestion.QuestionLabel = '单项数字填空';
@@ -54,9 +53,7 @@ const SurveyEditor: React.FC = () => {
         break;
       case 'MultiNumFillIn':
         newQuestion.QuestionLabel = '多项数字填空';
-        newQuestion.NumFillIns = [
-          { NumContent: 0, LeastNum: 0, MaxNum: 100, Precision: 0, NumFillInID: Math.random().toString(36).substr(2, 9) },
-        ];
+        newQuestion.NumFillIns = [];
         break;
       default:
         return;
@@ -90,6 +87,13 @@ const SurveyEditor: React.FC = () => {
   const handleSaveSurvey = () => {
     console.log('保存问卷:', survey);
     // 在此处添加保存逻辑，例如发送到服务器或保存到本地存储
+  };
+
+  // 导出问卷数据
+  const handleExportSurvey = () => {
+    const surveyData = JSON.stringify(survey, null, 2); // 将问卷数据转换为JSON字符串
+    const blob = new Blob([surveyData], { type: 'application/json' }); // 创建Blob对象
+    saveAs(blob, `${survey.title}.json`); // 使用file-saver保存文件
   };
 
   const scrollToQuestion = (questionID: string) => {
@@ -190,6 +194,13 @@ const SurveyEditor: React.FC = () => {
             style={{ flex: 1, height: '70px', fontSize: '1.75rem', fontWeight: 'bold' }}
           >
             保存问卷
+          </Button>
+          <Button
+            color="blue"
+            onClick={handleExportSurvey} // 添加导出按钮
+            style={{ flex: 1, height: '70px', fontSize: '1.75rem', fontWeight: 'bold' }}
+          >
+            导出问卷
           </Button>
         </Button.Group>
       </Flex>

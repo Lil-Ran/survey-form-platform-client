@@ -49,16 +49,23 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const explanation = question.Explanation || '';
+    const placeholder = '[填空]';
     if (e.key === 'Backspace' || e.key === 'Delete') {
       const cursorPosition = explanationCursor;
 
-      // 检查光标是否在“[填空]”的开头
-      const placeholder = '[填空]';
-      if (cursorPosition > 0 && explanation.slice(cursorPosition - placeholder.length, cursorPosition) === placeholder) {
+      // 检查光标是否在占位符的开头
+      if (
+        cursorPosition > 0 &&
+        explanation.slice(cursorPosition - placeholder.length, cursorPosition) === placeholder
+      ) {
         e.preventDefault(); // 阻止默认的删除行为
         // 删除整个占位符
         const newExplanation = explanation.slice(0, cursorPosition - placeholder.length) + explanation.slice(cursorPosition);
-        onUpdate({ ...question, Explanation: newExplanation });
+        
+        // 删除对应的文本填空项
+        const newTextFillIns = question.TextFillIns.slice(0, -1);
+
+        onUpdate({ ...question, Explanation: newExplanation, TextFillIns: newTextFillIns });
         setExplanationCursor(cursorPosition - placeholder.length); // 更新光标位置
       }
     }
