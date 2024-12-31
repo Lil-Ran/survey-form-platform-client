@@ -1,7 +1,7 @@
 import { Survey } from './SurveyModel';
 
 const exampleSurvey: Survey = {
-  id: 1,
+  surveyid: 'Survey1',
   title: "用户满意度调查",
   questions: [
     {

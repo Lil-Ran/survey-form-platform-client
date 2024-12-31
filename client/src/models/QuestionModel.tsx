@@ -59,25 +59,9 @@ export interface QuestionModel {
 
 export interface NumFillIn {
     /**
-     * 最小值
-     */
-    LeastNum: number;
-    /**
-     * 最大值
-     */
-    MaxNum: number;
-    /**
-     * 数字填空
-     */
-    NumContent: number;
-    /**
      * 数字填空ID
      */
     NumFillInID: string;
-    /**
-     * 小数位数
-     */
-    Precision: number;
     [property: string]: any;
 }
 
@@ -94,10 +78,6 @@ export interface Option {
 }
 
 export interface TextFillIn {
-    /**
-     * 文本内容
-     */
-    TextContent: string;
     /**
      * 文本填空ID
      */

@@ -1,7 +1,7 @@
 import { QuestionModel } from "./QuestionModel";
 
 export interface Survey {
-  id: number;
+  surveyid: string;
   title: string;
   questions: QuestionModel[];
 }

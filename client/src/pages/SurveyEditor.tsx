@@ -7,7 +7,7 @@ import { saveAs } from 'file-saver'; // 引入file-saver库
 
 const SurveyEditor: React.FC = () => {
   const [survey, setSurvey] = useState<Survey>({
-    id: Date.now(),
+    surveyid: Math.random().toString(36).substr(2, 9),
     title: '新建问卷',
     questions: [],
   });
@@ -27,7 +27,7 @@ const SurveyEditor: React.FC = () => {
       QuestionID: Math.random().toString(36).substr(2, 9), // 生成随机ID
       QuestionLabel: '',
       QuestionType: type,
-      SurveyID: survey.id.toString(),
+      SurveyID: survey.surveyid.toString(),
       TextFillIns: [],
       Title: '',
     };
