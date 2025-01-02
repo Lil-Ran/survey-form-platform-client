@@ -7,8 +7,8 @@ import { saveAs } from 'file-saver'; // 引入file-saver库
 
 const SurveyEditor: React.FC = () => {
   const [survey, setSurvey] = useState<Survey>({
-    surveyid: Math.random().toString(36).substr(2, 9),
-    title: '新建问卷',
+    SurveyID: Math.random().toString(36).substr(2, 9),
+    Title: '新建问卷',
     questions: [],
   });
 
@@ -17,7 +17,7 @@ const SurveyEditor: React.FC = () => {
   // 添加新问题
   const handleAddQuestion = (type: string) => {
     const newQuestion: QuestionModel = {
-      Explanation: '',
+      Description: '',
       LeastChoice: 0,
       MaxChoice: type === 'MultiChoice' || type === 'MultiTextFillIn' || type === 'MultiNumFillIn' ? 1 : 0,
       NumFillIns: [],
@@ -25,7 +25,7 @@ const SurveyEditor: React.FC = () => {
       QuestionID: Math.random().toString(36).substr(2, 9), // 生成随机ID
       QuestionLabel: '',
       QuestionType: type,
-      SurveyID: survey.surveyid.toString(),
+      SurveyID: survey.SurveyID.toString(),
       TextFillIns: [],
       Title: '',
     };
@@ -93,7 +93,7 @@ const SurveyEditor: React.FC = () => {
   const handleExportSurvey = () => {
     const surveyData = JSON.stringify(survey, null, 2); // 将问卷数据转换为JSON字符串
     const blob = new Blob([surveyData], { type: 'application/json' }); // 创建Blob对象
-    saveAs(blob, `${survey.title}.json`); // 使用file-saver保存文件
+    saveAs(blob, `${survey.Title}.json`); // 使用file-saver保存文件
   };
 
   const scrollToQuestion = (questionID: string) => {
@@ -266,8 +266,8 @@ const SurveyEditor: React.FC = () => {
             {/* 问卷标题 */}
             <TextInput
               label="问卷标题"
-              value={survey.title}
-              onChange={(e) => setSurvey({ ...survey, title: e.target.value })}
+              value={survey.Title}
+              onChange={(e) => setSurvey({ ...survey, Title: e.target.value })}
               placeholder="请输入问卷标题"
               style={{ marginBottom: '1.5rem' }}
               labelProps={{

@@ -12,13 +12,13 @@ const exampleSurvey: Survey = {
       Description: "请选择您最喜欢的编程语言。",
       LeastChoice: 1,
       MaxChoice: 1,
-      SurveyID: "survey1",
+      SurveyID: "Survey1",
       Options: [
-        { OptionID: "a", OptionContent: "JavaScript" },
-        { OptionID: "b", OptionContent: "Python" },
-        { OptionID: "c", OptionContent: "Java" },
-        { OptionID: "d", OptionContent: "C#" },
-        { OptionID: "e", OptionContent: "其它" }
+        { OptionID: "123123", OptionContent: "JavaScript" },
+        { OptionID: "werqwerq", OptionContent: "Python" },
+        { OptionID: "adsfas", OptionContent: "Java" },
+        { OptionID: "zcxvzx", OptionContent: "C#" },
+        { OptionID: "asdfasdf", OptionContent: "其它" }
       ],
       NumFillIns: [],
       TextFillIns: [],
@@ -32,12 +32,12 @@ const exampleSurvey: Survey = {
       Description: "请选择您常用的前端框架。",
       LeastChoice: 1,
       MaxChoice: 3,
-      SurveyID: "survey1",
+      SurveyID: "Survey1",
       Options: [
-        { OptionID: "a", OptionContent: "React" },
-        { OptionID: "b", OptionContent: "Vue" },
-        { OptionID: "c", OptionContent: "Angular" },
-        { OptionID: "d", OptionContent: "Svelte" }
+        { OptionID: "cdasdfasdf", OptionContent: "React" },
+        { OptionID: "zxcvzsdfad", OptionContent: "Vue" },
+        { OptionID: "fgbstgerg", OptionContent: "Angular" },
+        { OptionID: "awerEWRDD", OptionContent: "Svelte" }
       ],
       NumFillIns: [],
       TextFillIns: [],
@@ -51,13 +51,12 @@ const exampleSurvey: Survey = {
       Description: "请在下面的文本框中填写您的答案。",
       LeastChoice: 1,
       MaxChoice: 1,
-      SurveyID: "survey1",
+      SurveyID: "Survey1",
       Options: [],
       NumFillIns: [],
       TextFillIns: [
         {
           TextFillInID: "text1",
-          TextContent: "",
         }
       ],
     },
@@ -70,21 +69,18 @@ const exampleSurvey: Survey = {
       Description: "第一名:[填空], 第二名:[填空], 第三名:[填空]\n",
       LeastChoice: 1,
       MaxChoice: 1,
-      SurveyID: "survey1",
+      SurveyID: "Survey1",
       Options: [],
       NumFillIns: [],
       TextFillIns: [
         {
-          TextFillInID: "text1",
-          TextContent: "",
-        },
-        {
           TextFillInID: "text2",
-          TextContent: "",
         },
         {
           TextFillInID: "text3",
-          TextContent: "",
+        },
+        {
+          TextFillInID: "text4",
         }
       ],
     },
@@ -97,15 +93,11 @@ const exampleSurvey: Survey = {
       Description: "请输入您的年龄，数字范围为 18 到 100。",
       LeastChoice: 1,
       MaxChoice: 1,
-      SurveyID: "survey1",
+      SurveyID: "Survey1",
       Options: [],
       NumFillIns: [
         {
           NumFillInID: "num1",
-          NumContent: 25,
-          LeastNum: 18,
-          MaxNum: 100,
-          Precision: 0,
         }
       ],
       TextFillIns: [],
@@ -119,22 +111,14 @@ const exampleSurvey: Survey = {
       Description: "爸爸:[填空], 妈妈:[填空]",
       LeastChoice: 1,
       MaxChoice: 1,
-      SurveyID: "survey1",
+      SurveyID: "Survey1",
       Options: [],
       NumFillIns: [
         {
           NumFillInID: "num2",
-          NumContent: 25,
-          LeastNum: 18,
-          MaxNum: 100,
-          Precision: 0,
         },
         {
           NumFillInID: "num3",
-          NumContent: 25,
-          LeastNum: 18,
-          MaxNum: 100,
-          Precision: 0,
         }
       ],
       TextFillIns: [],
