@@ -5,15 +5,7 @@ export interface QuestionModel {
     /**
      * 问题说明
      */
-    Explanation: string;
-    /**
-     * 是否必填
-     */
-    IsRequire: boolean;
-    /**
-     * 是否显示
-     */
-    IsShow: boolean;
+    Description: string;
     /**
      * 最少选择数
      */

@@ -13,15 +13,15 @@ export interface QuestionResponseModel {
     /**
      * 问题id
      */
-    qid: string;
+    QuestionID: string;
     /**
      * 答卷id
      */
-    responseid: string;
+    ResponseID: string;
     /**
      * 问题类型
      */
-    type: string;
+    QuestionType: string;
     /**
      * 文本填空题(仅在文本填空题有用)
      */
@@ -36,7 +36,7 @@ export interface NumFillInResponse {
     /**
      * 数字填空内容
      */
-    content: number;
+    NumContent: number;
     /**
      * 数字填空id
      */
@@ -48,7 +48,7 @@ export interface NumFillInResponse {
     /**
      * 答卷id
      */
-    responseid: string;
+    ResponseID: string;
     [property: string]: any;
 }
 
@@ -59,7 +59,7 @@ export interface OptionResponse {
     /**
      * 是否被选
      */
-    isSelected: boolean;
+    isSelect: boolean;
     /**
      * 选项内容
      */
@@ -75,7 +75,7 @@ export interface OptionResponse {
     /**
      * 答卷id
      */
-    responseid: string;
+    ResponseID: string;
     [property: string]: any;
 }
 
@@ -86,7 +86,7 @@ export interface TextFillInResponse {
     /**
      * 文本填空内容
      */
-    content: string;
+    TextContent: string;
     /**
      * 问题id
      */
@@ -94,7 +94,7 @@ export interface TextFillInResponse {
     /**
      * 答卷id
      */
-    responseid: string;
+    ResponseID: string;
     /**
      * 文本填空id
      */

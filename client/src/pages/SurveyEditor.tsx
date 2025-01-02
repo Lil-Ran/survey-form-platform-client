@@ -18,8 +18,6 @@ const SurveyEditor: React.FC = () => {
   const handleAddQuestion = (type: string) => {
     const newQuestion: QuestionModel = {
       Explanation: '',
-      IsRequire: true,
-      IsShow: true,
       LeastChoice: 0,
       MaxChoice: type === 'MultiChoice' || type === 'MultiTextFillIn' || type === 'MultiNumFillIn' ? 1 : 0,
       NumFillIns: [],
@@ -35,9 +33,11 @@ const SurveyEditor: React.FC = () => {
     switch (type) {
       case 'SingleChoice':
         newQuestion.QuestionLabel = '单选题';
+        newQuestion.Options = [{ OptionContent: '', OptionID: Math.random().toString(36).substr(2, 9) }];
         break;
       case 'MultiChoice':
         newQuestion.QuestionLabel = '多选题';
+        newQuestion.Options = [{ OptionContent: '', OptionID: Math.random().toString(36).substr(2, 9) }];
         break;
       case 'SingleTextFillIn':
         newQuestion.QuestionLabel = '单项文本填空';
