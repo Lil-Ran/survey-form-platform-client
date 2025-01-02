@@ -2,7 +2,9 @@ import React, { useState, useRef } from 'react';
 import { Box, Button, TextInput, Flex, Text } from '@mantine/core';
 import QuestionDisplay from '../components/Answer/QuestionDisplay'; // 需要根据不同题型动态渲染的组件
 import { Survey } from '../models/SurveyModel'; // 问卷模型
+import { SurveyResponse } from '../models/SurveyResponseModel'; // 答卷模型
 import exampleSurvey from '../models/exampleSurvey';
+import { saveAs } from 'file-saver'; // 引入file-saver库
 
 interface SurveyAnswerProps {
   survey: Survey; // 接收问卷数据
@@ -26,6 +28,62 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
     onSubmit(answers); // 调用提交回调函数
   };
 
+  // 导出答卷数据
+  const handleExportResponse = () => {
+    const responseID = Math.random().toString(36).substr(2, 9);
+    const surveyResponse: SurveyResponse = {
+      responseid: responseID,
+      surveyid: survey.surveyid,
+      questions: survey.questions.map((question) => {
+        const questionResponse: {
+          qid: string;
+          responseid: string;
+          NumFillIns: { content: number; NumFillInID: string; QuestionID: string; responseid: string }[];
+          Options: { isSelected: boolean; OptionContent: string; OptionID: string; QuestionID: string; responseid: string }[];
+          TextFillIns: { content: string; TextFillInID: string; QuestionID: string; responseid: string }[];
+          type: string;
+        } = {
+          qid: question.QuestionID,
+          responseid: responseID,
+          NumFillIns: [],
+          Options: [],
+          TextFillIns: [],
+          type: question.QuestionType,
+        };
+
+        if (question.QuestionType === 'SingleChoice' || question.QuestionType === 'MultiChoice') {
+          questionResponse.Options = question.Options.map((option) => ({
+            isSelected: Array.isArray(answers[question.QuestionID]) && (answers[question.QuestionID] as string[]).includes(option.OptionID),
+            OptionContent: option.OptionContent,
+            OptionID: option.OptionID,
+            QuestionID: question.QuestionID,
+            responseid: responseID,
+          }));
+        } else if (question.QuestionType === 'SingleNumFillIn' || question.QuestionType === 'MultiNumFillIn') {
+          questionResponse.NumFillIns = question.NumFillIns.map((numFillIn, index) => ({
+            content: parseFloat(Array.isArray(answers[question.QuestionID]) ? (answers[question.QuestionID] as string[])[index] : answers[question.QuestionID] as string),
+            NumFillInID: numFillIn.NumFillInID,
+            QuestionID: question.QuestionID,
+            responseid: responseID,
+          }));
+        } else if (question.QuestionType === 'SingleTextFillIn' || question.QuestionType === 'MultiTextFillIn') {
+          questionResponse.TextFillIns = question.TextFillIns.map((textFillIn, index) => ({
+            content: Array.isArray(answers[question.QuestionID]) ? (answers[question.QuestionID] as string[])[index] : answers[question.QuestionID] as string,
+            TextFillInID: textFillIn.TextFillInID,
+            QuestionID: question.QuestionID,
+            responseid: responseID,
+          }));
+        }
+
+        return questionResponse;
+      }),
+    };
+
+    const responseData = JSON.stringify(surveyResponse, null, 2); // 将答卷数据转换为JSON字符串
+    const blob = new Blob([responseData], { type: 'application/json' }); // 创建Blob对象
+    saveAs(blob, `${survey.title}_response.json`); // 使用file-saver保存文件
+  };
+
   const scrollToQuestion = (questionID: string) => {
     const questionElement = questionRefs.current[questionID];
     if (questionElement) {
@@ -36,6 +94,7 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
     }
   };
 
+  
   return (
     <>
       {/* 顶部固定的导航栏 */}
@@ -159,9 +218,17 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
                 color="green"
                 size="lg"
                 onClick={handleSubmit}
-                style={{ fontSize: '1.5rem', fontWeight: 'bold' }}
+                style={{ fontSize: '1.5rem', fontWeight: 'bold', marginRight: '1rem' }}
               >
                 提交答卷
+              </Button>
+              <Button
+                color="blue"
+                size="lg"
+                onClick={handleExportResponse} // 添加导出按钮
+                style={{ fontSize: '1.5rem', fontWeight: 'bold' }}
+              >
+                导出答卷
               </Button>
             </Box>
           </Box>
