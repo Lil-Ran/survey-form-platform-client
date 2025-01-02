@@ -5,7 +5,7 @@ export interface QuestionModel {
     /**
      * 问题说明
      */
-    Explanation: string;
+    Description: string;
     /**
      * 最少选择数
      */

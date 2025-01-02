@@ -32,23 +32,23 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
   const handleExportResponse = () => {
     const responseID = Math.random().toString(36).substr(2, 9);
     const surveyResponse: SurveyResponse = {
-      responseid: responseID,
-      surveyid: survey.surveyid,
+      ResponseID: responseID,
+      SurveyID: survey.SurveyID,
       questionsResponse: survey.questions.map((question) => {
         const questionResponse: {
-          qid: string;
-          responseid: string;
-          NumFillIns: { NumContent: number; NumFillInID: string; QuestionID: string; responseid: string }[];
-          Options: { isSelect: boolean; OptionContent: string; OptionID: string; QuestionID: string; responseid: string }[];
-          TextFillIns: { TextContent: string; TextFillInID: string; QuestionID: string; responseid: string }[];
-          type: string;
+          QuestionID: string;
+          ResponseID: string;
+          NumFillIns: { NumContent: number; NumFillInID: string; QuestionID: string; ResponseID: string }[];
+          Options: { isSelect: boolean; OptionContent: string; OptionID: string; QuestionID: string; ResponseID: string }[];
+          TextFillIns: { TextContent: string; TextFillInID: string; QuestionID: string; ResponseID: string }[];
+          QuestionType: string;
         } = {
-          qid: question.QuestionID,
-          responseid: responseID,
+          QuestionID: question.QuestionID,
+          ResponseID: responseID,
           NumFillIns: [],
           Options: [],
           TextFillIns: [],
-          type: question.QuestionType,
+          QuestionType: question.QuestionType,
         };
 
         if (question.QuestionType === 'SingleChoice' || question.QuestionType === 'MultiChoice') {
@@ -57,14 +57,14 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
             OptionContent: option.OptionContent,
             OptionID: option.OptionID,
             QuestionID: question.QuestionID,
-            responseid: responseID,
+            ResponseID: responseID,
           }));
         } else if (question.QuestionType === 'SingleNumFillIn' || question.QuestionType === 'MultiNumFillIn') {
           questionResponse.NumFillIns = question.NumFillIns.map((numFillIn, index) => ({
             NumContent: parseFloat(Array.isArray(answers[question.QuestionID]) ? (answers[question.QuestionID] as string[])[index] : answers[question.QuestionID] as string),
             NumFillInID: numFillIn.NumFillInID,
             QuestionID: question.QuestionID,
-            responseid: responseID,
+            ResponseID: responseID,
           }));
 
         } else if (question.QuestionType === 'SingleTextFillIn' || question.QuestionType === 'MultiTextFillIn') {
@@ -72,7 +72,7 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
             TextContent: Array.isArray(answers[question.QuestionID]) ? (answers[question.QuestionID] as string[])[index] : answers[question.QuestionID] as string,
             TextFillInID: textFillIn.TextFillInID,
             QuestionID: question.QuestionID,
-            responseid: responseID,
+            ResponseID: responseID,
           }));
         }
 
@@ -82,7 +82,7 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
 
     const responseData = JSON.stringify(surveyResponse, null, 2); // 将答卷数据转换为JSON字符串
     const blob = new Blob([responseData], { type: 'application/json' }); // 创建Blob对象
-    saveAs(blob, `${survey.title}_response.json`); // 使用file-saver保存文件
+    saveAs(blob, `${survey.Title}_response.json`); // 使用file-saver保存文件
   };
 
   const scrollToQuestion = (questionID: string) => {
@@ -177,7 +177,7 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
             {/* 问卷标题 */}
             <TextInput
               label="问卷标题"
-              value={survey.title}
+              value={survey.Title}
               readOnly
               style={{ marginBottom: '1.5rem' }}
               labelProps={{
