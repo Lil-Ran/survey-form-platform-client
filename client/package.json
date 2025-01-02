@@ -9,7 +9,7 @@
     "lint": "oxlint --fix && eslint .",
     "prettier": "prettier --write src",
     "preview": "vite preview",
-    "genapi": "swagger-typescript-api -p ./openapi.json -t ./api-templates -o ./src --module-name-first-tag --sort-routes"
+    "genapi": "swagger-typescript-api -p ./openapi.yaml -t ./api-templates -o ./src --module-name-first-tag --sort-routes"
   },
   "dependencies": {
     "@mantine/charts": "^7.15.1",

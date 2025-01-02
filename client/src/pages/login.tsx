@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import {
   Anchor,
   Button,
@@ -13,32 +13,80 @@ import {
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import classes from '../styles/login.module.css';
-
-export interface User {
-  username: string;
-  password: string;
-}  
-
-const user: User = {
-  username: 'admin',
-  password: '12345',
-};
+import api from "@Api"
+import { showNotification, updateNotification } from '@mantine/notifications'
+import Icon from '@mdi/react';
+import { mdiCheck, mdiClose } from '@mdi/js'
+import useUser from '@Utils/useUser.tsx'
+import { useSearchParams } from 'react-router'
 
 // 登录组件
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
 
-  // 登录逻辑
-  const handleLogin = () => {
-    //TODO 接入登录API接口
-    if (username.trim() === user.username && password === user.password) {
-      alert('登录成功！');
-    } else {
-      alert('用户名或密码错误');
+  const [params, ] = useSearchParams()
+  const navigate = useNavigate()
+
+  const [disabled, setDisabled] = useState(false)
+  const [needRedirect, setNeedRedirect] = useState(false)
+
+  const { user, mutate } = useUser()
+
+  useEffect(() => {
+    if (needRedirect && user) {
+      setNeedRedirect(false)
+      setTimeout(() => {
+        void navigate(params.get('from') ?? '/workspace')
+      }, 200)
     }
-  };
+  }, [user, needRedirect])
+
+  const handleLogin = async (event: React.FormEvent) => {
+    event.preventDefault()
+
+    if (username.length === 0 || password.length < 6) {
+      showNotification({
+        color: 'red',
+        message: '邮箱或密码长度不足',
+        icon: <Icon path={mdiClose} size={1} />,
+      })
+      setDisabled(false)
+      return
+    }
+
+    setDisabled(true)
+
+    try {
+      await api.account.accountLoginCreate({
+        userName: username,
+        password: password,
+      })
+
+      showNotification({
+        id: 'login-status',
+        color: 'teal',
+        message: '登录成功',
+        icon: <Icon path={mdiCheck} size={1} />,
+        autoClose: true,
+        loading: false,
+      })
+      setNeedRedirect(true)
+      mutate()
+    } catch (err: any) {
+      showNotification({
+        id: 'login-status',
+        color: 'red',
+        title: '出错了',
+        message: err.response.data.message,
+        icon: <Icon path={mdiClose} size={1} />,
+        autoClose: true,
+        loading: false,
+      })
+    } finally {
+      setDisabled(false)
+    }
+  }
 
   return (
     <div style={{ backgroundColor: '#e0f7fa', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -66,6 +114,7 @@ const Login = () => {
             label="用户名/邮箱"
             placeholder="请输入您的用户名或邮箱"
             required
+            disabled={disabled}
             value={username}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               setUsername(event.currentTarget.value)
@@ -76,6 +125,7 @@ const Login = () => {
             placeholder="请输入您的密码"
             required
             mt="md"
+            disabled={disabled}
             value={password}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               setPassword(event.currentTarget.value)
@@ -87,7 +137,7 @@ const Login = () => {
               忘记密码?
             </Anchor>
           </Group>
-          <Button fullWidth mt="xl" onClick={handleLogin}>
+          <Button fullWidth mt="xl" disabled={disabled} onClick={handleLogin}>
             登录
           </Button>
         </Paper>

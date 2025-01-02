@@ -34,6 +34,9 @@ export default tseslint.config(
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      '@typescript-eslint/no-explicit-any': 'off',
+      // '@typescript-eslint/no-unsafe-assignment': 'off',
+      // '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/naming-convention': [
         'warn',
         {
