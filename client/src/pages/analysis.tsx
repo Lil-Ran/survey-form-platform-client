@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { IconListSearch } from '@tabler/icons-react';
 import cx from 'clsx';
 import { Box, Group, Text } from '@mantine/core';
 import classes from '../styles/analysis.module.css';
+import Icon from '@mdi/react';
+import { mdiMagnify } from '@mdi/js';
 
 const links = [
   { label: 'Usage', link: '#usage', order: 1 },
@@ -37,7 +38,7 @@ export function AnalysisContent() {
   return (
     <div className={classes.root}>
       <Group mb="md">
-        <IconListSearch size={18} stroke={1.5} />
+        <Icon path={mdiMagnify} />
         <Text>Table of contents</Text>
       </Group>
       <div className={classes.links}>

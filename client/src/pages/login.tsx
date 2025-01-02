@@ -14,7 +14,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import classes from '../styles/login.module.css';
 import api from "@Api"
-import { showNotification, updateNotification } from '@mantine/notifications'
+import { showNotification } from '@mantine/notifications'
 import Icon from '@mdi/react';
 import { mdiCheck, mdiClose } from '@mdi/js'
 import useUser from '@Utils/useUser.tsx'
@@ -37,7 +37,7 @@ const Login = () => {
     if (needRedirect && user) {
       setNeedRedirect(false)
       setTimeout(() => {
-        void navigate(params.get('from') ?? '/workspace')
+        void navigate(params.get('from') ?? '/surveymain')
       }, 200)
     }
   }, [user, needRedirect])

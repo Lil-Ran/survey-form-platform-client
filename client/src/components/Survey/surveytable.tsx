@@ -1,5 +1,4 @@
 import { useState, useMemo, useCallback } from 'react';
-import { IconChevronDown, IconChevronUp, IconSearch, IconSelector, IconSettings, IconEdit, IconEye, IconShare, IconDatabase, IconTrash } from '@tabler/icons-react';
 import {
   Center,
   Group,
@@ -12,12 +11,15 @@ import {
   Button,
   Modal,
   Tooltip,
+  ActionIcon,
 } from '@mantine/core';
 import classes from '../../styles/SurveyMainStyles.module.css';
 import dayjs from 'dayjs';
 import { QRCodeCanvas } from 'qrcode.react';  // 引入QRCode库
 import SurveyPreview from '../../pages/SurveyPreview'; // 引入SurveyPreview组件
 import { QuestionModel } from '../../models/QuestionModel';
+import { mdiArrowDown, mdiArrowUp, mdiArrowUpDown, mdiDatabase, mdiEye, mdiMagnify, mdiPencil, mdiSettingsHelper, mdiShare, mdiTrashCan } from '@mdi/js';
+import Icon from '@mdi/react';
 
 export interface RowData {
   surveyId: string;
@@ -42,7 +44,7 @@ interface ThProps {
 }
 
 function Th({ children, reversed, sorted, onSort }: ThProps) {
-  const Icon = sorted ? (reversed ? IconChevronUp as React.ElementType : IconChevronDown as React.ElementType) : IconSelector as React.ElementType;
+  const icon = sorted ? (reversed ? mdiArrowUp : mdiArrowDown) : mdiArrowUpDown
   return (
     <Table.Th className={classes.th}>
       <UnstyledButton onClick={onSort} className={classes.control}>
@@ -51,7 +53,7 @@ function Th({ children, reversed, sorted, onSort }: ThProps) {
             {children}
           </Text>
           <Center className={classes.icon}>
-            <Icon size={16} stroke={1.5} />
+            <Icon path={icon} />
           </Center>
         </Group>
       </UnstyledButton>
@@ -193,37 +195,33 @@ export function SurveyTable({ filter }: { filter: (row: RowData) => boolean }) {
       <Table.Td className={classes.tableResponseCount}>{row.responseCount}</Table.Td>
       <Table.Td className={classes.tableOwner}>{`${row.ownerName} (${row.ownerId})`}</Table.Td>
       <Table.Td className={classes.tableCreateTime}>{dayjs(row.createTime).format('YYYY-MM-DD')}</Table.Td>
-      <Table.Td className={classes.tableActions}>  
+      <Table.Td className={classes.tableActions}>
         <Group gap="xs">
           <Tooltip label="属性" withArrow>
-            <Button variant="subtle" size="compact-xs"><IconSettings size={16} /></Button>
+            <ActionIcon><Icon path={mdiSettingsHelper} /></ActionIcon>
           </Tooltip>
           <Tooltip label="设计" withArrow>
-            <Button variant="subtle" size="compact-xs"><IconEdit size={16} /></Button>
+            <ActionIcon><Icon path={mdiPencil} /></ActionIcon>
           </Tooltip>
           <Tooltip label="预览" withArrow>
-            <Button
-              variant="subtle"
-              size="compact-xs"
+            <ActionIcon
               onClick={() => handlePreviewClick(row)} // 点击预览按钮时触发
             >
-              <IconEye size={16} />
-            </Button>
+              <Icon path={mdiEye} />
+            </ActionIcon>
           </Tooltip>
           <Tooltip label="分享" withArrow>
-            <Button
-              variant="subtle"
-              size="compact-xs"
+            <ActionIcon
               onClick={() => handleShareClick(row.surveyId)} // 点击分享按钮时触发
             >
-              <IconShare size={16} />
-            </Button>
+              <Icon path={mdiShare} />
+            </ActionIcon>
           </Tooltip>
           <Tooltip label="数据" withArrow>
-            <Button variant="subtle" size="compact-xs"><IconDatabase size={16} /></Button>
+            <ActionIcon><Icon path={mdiDatabase} /></ActionIcon>
           </Tooltip>
           <Tooltip label="删除" withArrow>
-            <Button variant="subtle" size="compact-xs"><IconTrash size={16} /></Button>
+            <ActionIcon><Icon path={mdiTrashCan} /></ActionIcon>
           </Tooltip>
         </Group>
       </Table.Td>
@@ -235,7 +233,7 @@ export function SurveyTable({ filter }: { filter: (row: RowData) => boolean }) {
       <Group mb="md" justify="space-between">
         <TextInput
           placeholder="搜索问卷标题或问卷发布者"
-          leftSection={<IconSearch size={16} stroke={1.5} />}
+          leftSection={<Icon path={mdiMagnify} />}
           value={search}
           onChange={handleSearchChange}
           style={{ flex: 1, marginRight: '1rem' }}
@@ -325,7 +323,7 @@ export function SurveyTable({ filter }: { filter: (row: RowData) => boolean }) {
           style={{ width: '80%' }} // 设置宽度为父容器的 100%
           rightSection={
             <div style={{ width: '5px' }}> {/* 包裹按钮并控制宽度 */}
-              <Button size="sm" 
+              <Button size="sm"
                 onClick={() => {
                   navigator.clipboard.writeText(shareLink)
                     .then(() => alert('复制成功'))

@@ -10,6 +10,8 @@ import '@mantine/core/styles.css'
 import '@mantine/dates/styles.css'
 import '@mantine/dropzone/styles.css'
 import '@mantine/notifications/styles.css'
+import { fetcher } from '@Api'
+import { SWRConfig } from 'swr'
 
 const App: FC = () => {
   return (
@@ -17,15 +19,22 @@ const App: FC = () => {
       <Notifications zIndex={10000} />
       <DatesProvider settings={{ locale: 'zh' }}>
         <ModalsProvider labels={{ confirm: '确认', cancel: '取消' }}>
-          <Suspense
-            fallback={
-              <Center h="100vh" w="100vw">
-                <Loader />
-              </Center>
-            }
+          <SWRConfig
+            value={{
+              refreshInterval: 10000,
+              fetcher,
+            }}
           >
-            {useRoutes(routes)}
-          </Suspense>
+            <Suspense
+              fallback={
+                <Center h="100vh" w="100vw">
+                  <Loader />
+                </Center>
+              }
+            >
+              {useRoutes(routes)}
+            </Suspense>
+          </SWRConfig>
         </ModalsProvider>
       </DatesProvider>
     </MantineProvider>
