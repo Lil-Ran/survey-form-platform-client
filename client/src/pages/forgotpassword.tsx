@@ -1,58 +1,74 @@
-import { IconArrowLeft } from '@tabler/icons-react';
+import React, { useState } from 'react';
 import {
   Anchor,
-  Box,
   Button,
-  Center,
   Container,
-  Group,
   Paper,
   Text,
   TextInput,
+  Title,
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import classes from '../styles/login.module.css';
 
-export function ForgotPassword() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+export interface User {
+  username: string;
+  password: string;
+  email: string;
+}
 
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
+// 忘记密码组件
+const ForgotPassword = () => {
+  const [email, setEmail] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
+  const navigate = useNavigate();
+
+  // 忘记密码逻辑
+  const handleForgotPassword = () => {
+    //TODO 接入忘记密码API接口
+    setEmailSent(true);
+    alert('重置密码邮件已发送！');
   };
 
   return (
-    <div className={classes.wrapper} style={{ backgroundColor: '#e0f7fa', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <Container size={420} my={40}>
-        <Text ta="center" className={classes.title} style={{ fontSize: '2rem' }} mt={10}>
-          忘记您的密码?
-        </Text>
-        <Text color="dimmed" size="sm" style={{ textAlign: 'center' }} mt={5}>
-          请输入邮箱获得重置密码链接
+    <div style={{ backgroundColor: '#e0f7fa', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Container size="lg" my={40} style={{ width: '100%', maxWidth: '400px' }}>
+        <Title ta="center" className={classes.title} style={{ color: '#001f3f' }}>
+          忘记密码{' '}
+          <Text
+            inherit
+            variant="gradient"
+            component="span"
+            gradient={{ from: '#6c5ce7', to: '#a29bfe' }}
+          >
+            survey-form
+          </Text>
+        </Title>
+        <Text c="dimmed" size="sm" ta="center" mt={5} style={{ color: '#001f3f' }}>
+          记得密码?{' '}
+          <Anchor size="sm" component="button" style={{ color: '#1e90ff' }} onClick={() => { void navigate('/login'); }}>
+            登录
+          </Anchor>
         </Text>
 
-        <Paper withBorder shadow="md" p={30} radius="md" mt="xl" style={{ borderWidth: '1px' }}>
-          <TextInput 
-            label="邮箱" 
-            placeholder="请输入您的邮箱" 
-            required 
-            value={email} 
-            onChange={handleEmailChange} 
+        <Paper withBorder shadow="md" p={30} mt={30} radius="md" style={{ width: '100%' }}>
+          <TextInput
+            label="邮箱"
+            placeholder="请输入您的邮箱"
+            required
+            value={email}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              setEmail(event.currentTarget.value)
+            }
           />
-          <Group mt="lg" className={classes.controls} style={{ justifyContent: 'space-between' }}>
-            <Anchor color="dimmed" size="sm" className={classes.control} onClick={() => {void navigate('/login')}}>
-              <Center inline>
-                <IconArrowLeft size={12} stroke={1.5} />
-                <Box ml={5}>返回登录页面</Box>
-              </Center>
-            </Anchor>
-            <Button className={classes.control}>重设密码</Button>
-          </Group>
+          <Button fullWidth mt="xl" onClick={handleForgotPassword}>
+            发送重置邮件
+          </Button>
+          {emailSent && <Text ta="center" mt="md" style={{ color: '#28a745' }}>重置密码邮件已发送，请检查您的邮箱。</Text>}
         </Paper>
       </Container>
     </div>
   );
-}
+};
 
 export default ForgotPassword;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text, TextInput, Flex } from '@mantine/core';
-import { RowData } from './surveytable'; // 根据实际路径调整
+import { RowData } from '../components/Survey/surveytable'; // 根据实际路径调整
 
 interface SurveyPreviewProps {
   survey: RowData;
