@@ -7,14 +7,6 @@ export interface QuestionModel {
      */
     Explanation: string;
     /**
-     * 是否必填
-     */
-    IsRequire: boolean;
-    /**
-     * 是否显示
-     */
-    IsShow: boolean;
-    /**
      * 最少选择数
      */
     LeastChoice: number;

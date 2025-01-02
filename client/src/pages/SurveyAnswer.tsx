@@ -34,13 +34,13 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
     const surveyResponse: SurveyResponse = {
       responseid: responseID,
       surveyid: survey.surveyid,
-      questions: survey.questions.map((question) => {
+      questionsResponse: survey.questions.map((question) => {
         const questionResponse: {
           qid: string;
           responseid: string;
-          NumFillIns: { content: number; NumFillInID: string; QuestionID: string; responseid: string }[];
-          Options: { isSelected: boolean; OptionContent: string; OptionID: string; QuestionID: string; responseid: string }[];
-          TextFillIns: { content: string; TextFillInID: string; QuestionID: string; responseid: string }[];
+          NumFillIns: { NumContent: number; NumFillInID: string; QuestionID: string; responseid: string }[];
+          Options: { isSelect: boolean; OptionContent: string; OptionID: string; QuestionID: string; responseid: string }[];
+          TextFillIns: { TextContent: string; TextFillInID: string; QuestionID: string; responseid: string }[];
           type: string;
         } = {
           qid: question.QuestionID,
@@ -53,7 +53,7 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
 
         if (question.QuestionType === 'SingleChoice' || question.QuestionType === 'MultiChoice') {
           questionResponse.Options = question.Options.map((option) => ({
-            isSelected: Array.isArray(answers[question.QuestionID]) && (answers[question.QuestionID] as string[]).includes(option.OptionID),
+            isSelect: Array.isArray(answers[question.QuestionID]) && (answers[question.QuestionID] as string[]).includes(option.OptionID),
             OptionContent: option.OptionContent,
             OptionID: option.OptionID,
             QuestionID: question.QuestionID,
@@ -61,14 +61,15 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
           }));
         } else if (question.QuestionType === 'SingleNumFillIn' || question.QuestionType === 'MultiNumFillIn') {
           questionResponse.NumFillIns = question.NumFillIns.map((numFillIn, index) => ({
-            content: parseFloat(Array.isArray(answers[question.QuestionID]) ? (answers[question.QuestionID] as string[])[index] : answers[question.QuestionID] as string),
+            NumContent: parseFloat(Array.isArray(answers[question.QuestionID]) ? (answers[question.QuestionID] as string[])[index] : answers[question.QuestionID] as string),
             NumFillInID: numFillIn.NumFillInID,
             QuestionID: question.QuestionID,
             responseid: responseID,
           }));
+
         } else if (question.QuestionType === 'SingleTextFillIn' || question.QuestionType === 'MultiTextFillIn') {
           questionResponse.TextFillIns = question.TextFillIns.map((textFillIn, index) => ({
-            content: Array.isArray(answers[question.QuestionID]) ? (answers[question.QuestionID] as string[])[index] : answers[question.QuestionID] as string,
+            TextContent: Array.isArray(answers[question.QuestionID]) ? (answers[question.QuestionID] as string[])[index] : answers[question.QuestionID] as string,
             TextFillInID: textFillIn.TextFillInID,
             QuestionID: question.QuestionID,
             responseid: responseID,

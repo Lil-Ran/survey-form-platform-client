@@ -36,7 +36,7 @@ export interface NumFillInResponse {
     /**
      * 数字填空内容
      */
-    content: number;
+    NumContent: number;
     /**
      * 数字填空id
      */
@@ -59,7 +59,7 @@ export interface OptionResponse {
     /**
      * 是否被选
      */
-    isSelected: boolean;
+    isSelect: boolean;
     /**
      * 选项内容
      */
@@ -86,7 +86,7 @@ export interface TextFillInResponse {
     /**
      * 文本填空内容
      */
-    content: string;
+    TextContent: string;
     /**
      * 问题id
      */
