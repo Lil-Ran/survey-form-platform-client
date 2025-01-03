@@ -21,11 +21,7 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
 
   const handleAddNumFillIn = () => {
     const newNumFillIn: NumFillIn = {
-      NumContent: 0,
       NumFillInID: Math.random().toString(36).substr(2, 9), // 生成随机 ID
-      LeastNum: 0,
-      MaxNum: 100,
-      Precision: 0,
     };
 
     const explanation = question.Explanation || '';
@@ -84,7 +80,7 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
         placeholder="请输入题目标题"
         labelProps={{
           style: {
-            fontSize: '1.5rem', // 设置标签字体大小
+            fontSize: '1rem', // 设置标签字体大小
           },
         }}
         required
@@ -101,7 +97,7 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
         onKeyDown={handleKeyDown} // 添加对按键事件的监听
         labelProps={{
           style: {
-            fontSize: '1.5rem', // 设置标签字体大小
+            fontSize: '1rem', // 设置标签字体大小
           },
         }}
       />

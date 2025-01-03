@@ -27,7 +27,7 @@ const SingleTextFillIn: React.FC<SingleTextFillInProps> = ({ question, onUpdate,
         placeholder="请输入题目标题"
         labelProps={{
           style: {
-            fontSize: '1.5rem', // 设置标签字体大小
+            fontSize: '1rem', // 设置标签字体大小
           },
         }}
         required
@@ -41,7 +41,7 @@ const SingleTextFillIn: React.FC<SingleTextFillInProps> = ({ question, onUpdate,
         placeholder="可选：请输入问题说明"
         labelProps={{
           style: {
-            fontSize: '1.5rem', // 设置标签字体大小
+            fontSize: '1rem', // 设置标签字体大小
           },
         }}
       />

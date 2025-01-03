@@ -115,10 +115,10 @@ const SurveyEditor: React.FC = () => {
           top: 0, // 距离顶部为 0
           width: '100%', // 占满屏幕宽度
           backgroundColor: '#276AB7', // 深色背景
-          padding: '1.5rem', // 内边距
+          padding: '0.75rem', // 内边距
           color: '#ffffff', // 白色文字
           textAlign: 'center', // 居中对齐
-          fontSize: '2rem', // 字体大小
+          fontSize: '1rem', // 字体大小
           fontWeight: 'bold', // 字体加粗
           zIndex: 1000, // 确保在其他内容之上
         }}
@@ -131,20 +131,20 @@ const SurveyEditor: React.FC = () => {
         justify="space-between"
         style={{
           position: 'fixed', // 固定位置
-          top: '4rem', 
+          top: '2rem', 
           width: '100%', // 占满屏幕宽度
-          padding: '2.5rem',
+          padding: '1.25rem',
           backgroundColor: '#ffffff', // 背景色防止内容遮挡
           zIndex: 999, // 保证在内容之上，但在导航栏之下
-          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)', // 添加阴影
+          boxShadow: '0 1px 5px rgba(0, 0, 0, 0.1)', // 添加阴影
         }}
       >
-        <Button.Group style={{ width: '100%', gap: '0.5rem', height: '40px' }}>
+        <Button.Group style={{ width: '100%', gap: '0.5rem', height: '20px' }}>
           <Button
             variant="light"
             color="blue"
             onClick={() => handleAddQuestion('SingleChoice')}
-            style={{ flex: 1, height: '70px', fontSize: '1.75rem', fontWeight: 'bold' }}
+            style={{ flex: 1, height: '35px', fontSize: '1rem', fontWeight: 'bold' }}
           >
             单选题
           </Button>
@@ -152,7 +152,7 @@ const SurveyEditor: React.FC = () => {
             variant="light"
             color="blue"
             onClick={() => handleAddQuestion('MultiChoice')}
-            style={{ flex: 1, height: '70px', fontSize: '1.75rem', fontWeight: 'bold' }}
+            style={{ flex: 1, height: '35px', fontSize: '1rem', fontWeight: 'bold' }}
           >
             多选题
           </Button>
@@ -160,7 +160,7 @@ const SurveyEditor: React.FC = () => {
             variant="light"
             color="blue"
             onClick={() => handleAddQuestion('SingleTextFillIn')}
-            style={{ flex: 1, height: '70px', fontSize: '1.75rem', fontWeight: 'bold' }}
+            style={{ flex: 1, height: '35px', fontSize: '1rem', fontWeight: 'bold' }}
           >
             单项文本填空
           </Button>
@@ -168,7 +168,7 @@ const SurveyEditor: React.FC = () => {
             variant="light"
             color="blue"
             onClick={() => handleAddQuestion('MultiTextFillIn')}
-            style={{ flex: 1, height: '70px', fontSize: '1.75rem', fontWeight: 'bold' }}
+            style={{ flex: 1, height: '35px', fontSize: '1rem', fontWeight: 'bold' }}
           >
             多项文本填空
           </Button>
@@ -176,7 +176,7 @@ const SurveyEditor: React.FC = () => {
             variant="light"
             color="blue"
             onClick={() => handleAddQuestion('SingleNumFillIn')}
-            style={{ flex: 1, height: '70px', fontSize: '1.75rem', fontWeight: 'bold' }}
+            style={{ flex: 1, height: '35px', fontSize: '1rem', fontWeight: 'bold' }}
           >
             单项数字填空
           </Button>
@@ -184,21 +184,21 @@ const SurveyEditor: React.FC = () => {
             variant="light"
             color="blue"
             onClick={() => handleAddQuestion('MultiNumFillIn')}
-            style={{ flex: 1, height: '70px', fontSize: '1.75rem', fontWeight: 'bold' }}
+            style={{ flex: 1, height: '35px', fontSize: '1rem', fontWeight: 'bold' }}
           >
             多项数字填空
           </Button>
           <Button
             color="green"
             onClick={handleSaveSurvey}
-            style={{ flex: 1, height: '70px', fontSize: '1.75rem', fontWeight: 'bold' }}
+            style={{ flex: 1, height: '35px', fontSize: '1rem', fontWeight: 'bold' }}
           >
             保存问卷
           </Button>
           <Button
             color="blue"
             onClick={handleExportSurvey} // 添加导出按钮
-            style={{ flex: 1, height: '70px', fontSize: '1.75rem', fontWeight: 'bold' }}
+            style={{ flex: 1, height: '35px', fontSize: '1rem', fontWeight: 'bold' }}
           >
             导出问卷
           </Button>
@@ -213,13 +213,13 @@ const SurveyEditor: React.FC = () => {
             backgroundColor: '#f0f0f0',
             padding: '1rem',
             position: 'fixed',
-            top: '12rem',
+            top: '6rem',
             left: 0,
-            height: 'calc(100vh - 12rem)',
+            height: 'calc(200vh - 12rem)',
             overflowY: 'auto',
           }}
         >
-          <Text style={{ fontSize: '40px', marginBottom: '1rem', textAlign: 'center'}}>
+          <Text style={{ fontSize: '20px', marginBottom: '1rem', textAlign: 'center'}}>
             题目列表
           </Text>
           {survey.questions.map((question, index) => (
@@ -230,8 +230,8 @@ const SurveyEditor: React.FC = () => {
               onClick={() => scrollToQuestion(question.QuestionID)}
               style={{
                 marginBottom: '0.5rem',
-                height: '50px', // 设置按钮高度
-                fontSize: '25px', // 设置字体大小
+                height: '25px', // 设置按钮高度
+                fontSize: '12.5px', // 设置字体大小
               }}
             >
               问题 {index + 1}
@@ -247,7 +247,7 @@ const SurveyEditor: React.FC = () => {
             display: 'flex',
             justifyContent: 'center',
             padding: '2rem 0',
-            marginTop: '12rem', // 确保内容在导航栏和工具栏下方
+            marginTop: '3rem', // 确保内容在导航栏和工具栏下方
             marginLeft: '200px', // 为左侧列表留出空间
             width: 'calc(100% - 200px)', // 减去左侧列表的宽度
           }}
@@ -255,12 +255,12 @@ const SurveyEditor: React.FC = () => {
           {/* 问卷编辑区域 */}
           <Box
             style={{
-              width: '1600px', // 固定宽度
+              width: '800px', // 固定宽度
               backgroundColor: '#ffffff', // 白色背景
               borderRadius: '8px', // 圆角
               boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // 添加阴影
               padding: '2rem', // 内边距
-              fontSize: '2rem', // 字体大小
+              fontSize: '1rem', // 字体大小
             }}
           >
             {/* 问卷标题 */}
@@ -269,10 +269,10 @@ const SurveyEditor: React.FC = () => {
               value={survey.Title}
               onChange={(e) => setSurvey({ ...survey, Title: e.target.value })}
               placeholder="请输入问卷标题"
-              style={{ marginBottom: '1.5rem' }}
+              style={{ marginBottom: '0.75rem' }}
               labelProps={{
                 style: {
-                  fontSize: '2rem', // 设置标签字体大小
+                  fontSize: '1rem', // 设置标签字体大小
                   fontWeight: 'bold', // 可选: 设置标签加粗
                 },
               }}
@@ -283,11 +283,11 @@ const SurveyEditor: React.FC = () => {
             {survey.questions.map((question, index) => (
               <Box
                 key={question.QuestionID}
-                style={{ marginBottom: '2rem' }}
+                style={{ marginBottom: '1rem' }}
                 ref={(el) => (questionRefs.current[question.QuestionID] = el)}
               >
                 {/* 问题编号 */}
-                <Box style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                <Box style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>
                   问题 {index + 1} ({question.QuestionLabel})
                 </Box>
                 <QuestionEditor
@@ -300,7 +300,7 @@ const SurveyEditor: React.FC = () => {
 
             {/* 空状态提示 */}
             {survey.questions.length === 0 && (
-              <Box style={{ textAlign: 'center', marginTop: '2rem', color: '#888' }}>
+              <Box style={{ textAlign: 'center', marginTop: '1rem', color: '#888' }}>
                 暂无问题，请添加新问题。
               </Box>
             )}

@@ -47,7 +47,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({ question, onUpdate, onDelet
           placeholder="请输入题目标题"
           labelProps={{
             style: {
-              fontSize: '1.5rem', // 设置标签字体大小
+              fontSize: '1rem', // 设置标签字体大小
             },
           }}
           required
@@ -61,14 +61,14 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({ question, onUpdate, onDelet
           placeholder="可选：请输入问题说明"
           labelProps={{
             style: {
-              fontSize: '1.5rem', // 设置标签字体大小
+              fontSize: '1rem', // 设置标签字体大小
             },
           }}
         />
 
         {/* 选项列表 */}
         <div>
-          <div style={{ marginBottom: '0.5rem', fontSize: '1.5rem', fontWeight: 500 }}>选项</div>
+          <div style={{ marginBottom: '0.5rem', fontSize: '1rem', fontWeight: 500 }}>选项</div>
           {question.Options.map((option, index) => (
             <Flex key={option.OptionID} justify="space-between" align="center" gap="xs" style={{ marginBottom: '0.5rem' }}>
               <TextInput

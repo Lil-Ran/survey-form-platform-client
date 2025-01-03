@@ -80,7 +80,7 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
         placeholder="请输入题目标题"
         labelProps={{
           style: {
-            fontSize: '1.5rem',
+            fontSize: '1rem',
           },
         }}
         required
@@ -96,7 +96,7 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
         onKeyDown={handleKeyDown} // 添加对按键事件的监听
         labelProps={{
           style: {
-            fontSize: '1.5rem',
+            fontSize: '1rem',
           },
         }}
       />

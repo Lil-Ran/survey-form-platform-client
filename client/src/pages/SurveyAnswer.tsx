@@ -105,10 +105,10 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
           top: 0, // 距离顶部为 0
           width: '100%', // 占满屏幕宽度
           backgroundColor: '#276AB7', // 深色背景
-          padding: '1.5rem', // 内边距
+          padding: '0.75rem', // 内边距
           color: '#ffffff', // 白色文字
           textAlign: 'center', // 居中对齐
-          fontSize: '2rem', // 字体大小
+          fontSize: '1rem', // 字体大小
           fontWeight: 'bold', // 字体加粗
           zIndex: 1000, // 确保在其他内容之上
         }}
@@ -124,13 +124,13 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
             backgroundColor: '#f0f0f0',
             padding: '1rem',
             position: 'fixed',
-            top: '6rem',
+            top: '3rem',
             left: 0,
-            height: 'calc(100vh - 12rem)',
+            height: 'calc(200vh - 12rem)',
             overflowY: 'auto',
           }}
         >
-          <Text style={{ fontSize: '40px', marginBottom: '1rem', textAlign: 'center'}}>
+          <Text style={{ fontSize: '20px', marginBottom: '1rem', textAlign: 'center'}}>
             题目列表
           </Text>
           {survey.questions.map((question, index) => (
@@ -141,8 +141,8 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
               onClick={() => scrollToQuestion(question.QuestionID)}
               style={{
                 marginBottom: '0.5rem',
-                height: '50px', // 设置按钮高度
-                fontSize: '25px', // 设置字体大小
+                height: '25px', // 设置按钮高度
+                fontSize: '12.5px', // 设置字体大小
               }}
             >
               问题 {index + 1}
@@ -158,7 +158,7 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
             display: 'flex',
             justifyContent: 'center',
             padding: '2rem 0',
-            marginTop: '6rem', // 确保内容在导航栏和工具栏下方
+            marginTop: '3rem', // 确保内容在导航栏和工具栏下方
             marginLeft: '200px', // 为左侧列表留出空间
             width: 'calc(100% - 200px)', // 减去左侧列表的宽度
           }}
@@ -166,12 +166,12 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
           {/* 问卷回答区域 */}
           <Box
             style={{
-              width: '1600px', // 固定宽度
+              width: '800px', // 固定宽度
               backgroundColor: '#ffffff', // 白色背景
               borderRadius: '8px', // 圆角
               boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // 添加阴影
               padding: '2rem', // 内边距
-              fontSize: '2rem', // 字体大小
+              fontSize: '1rem', // 字体大小
             }}
           >
             {/* 问卷标题 */}
@@ -179,10 +179,10 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
               label="问卷标题"
               value={survey.Title}
               readOnly
-              style={{ marginBottom: '1.5rem' }}
+              style={{ marginBottom: '0.75rem' }}
               labelProps={{
                 style: {
-                  fontSize: '2rem', // 设置标签字体大小
+                  fontSize: '1rem', // 设置标签字体大小
                   fontWeight: 'bold', // 可选: 设置标签加粗
                 },
               }}
@@ -192,7 +192,7 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
             {survey.questions.map((question, index) => (
               <Box
                 key={question.QuestionID}
-                style={{ marginBottom: '2rem' }}
+                style={{ marginBottom: '1rem' }}
                 ref={(el) => (questionRefs.current[question.QuestionID] = el)}
               >
                 {/* 问题编号 */}
@@ -219,7 +219,7 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
                 color="green"
                 size="lg"
                 onClick={handleSubmit}
-                style={{ fontSize: '1.5rem', fontWeight: 'bold', marginRight: '1rem' }}
+                style={{ fontSize: '1rem', fontWeight: 'bold', marginRight: '1rem' }}
               >
                 提交答卷
               </Button>
@@ -227,7 +227,7 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
                 color="blue"
                 size="lg"
                 onClick={handleExportResponse} // 添加导出按钮
-                style={{ fontSize: '1.5rem', fontWeight: 'bold' }}
+                style={{ fontSize: '1rem', fontWeight: 'bold' }}
               >
                 导出答卷
               </Button>
