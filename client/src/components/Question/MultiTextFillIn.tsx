@@ -16,7 +16,7 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
   };
 
   const handleExplanationChange = (explanation: string) => {
-    onUpdate({ ...question, Explanation: explanation });
+    onUpdate({ ...question, Description: explanation });
   };
 
   const handleAddTextFillIn = () => {
@@ -87,7 +87,7 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
       />
       <Textarea
         label="问题说明"
-        value={question.Explanation}
+        value={question.Description}
         onChange={(e) => handleExplanationChange(e.target.value)}
         placeholder="可选：请输入问题说明"
         minRows={2}

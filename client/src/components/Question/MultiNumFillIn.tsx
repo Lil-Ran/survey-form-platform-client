@@ -16,7 +16,7 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
   };
 
   const handleExplanationChange = (explanation: string) => {
-    onUpdate({ ...question, Explanation: explanation });
+    onUpdate({ ...question, Description: explanation });
   };
 
   const handleAddNumFillIn = () => {
@@ -88,7 +88,7 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
 
       <Textarea
         label="问题说明"
-        value={question.Explanation}
+        value={question.Description}
         onChange={(e) => handleExplanationChange(e.target.value)}
         placeholder="可选：请输入问题说明"
         minRows={2}

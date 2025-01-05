@@ -13,8 +13,8 @@ const MultiChoice: React.FC<MultiChoiceProps> = ({ question, onUpdate, onDelete 
     onUpdate({ ...question, Title: title });
   };
 
-  const handleExplanationChange = (explanation: string) => {
-    onUpdate({ ...question, Explanation: explanation });
+  const handleExplanationChange = (Description: string) => {
+    onUpdate({ ...question, Description: Description });
   };
 
   const handleOptionChange = (index: number, value: string) => {
@@ -67,7 +67,7 @@ const MultiChoice: React.FC<MultiChoiceProps> = ({ question, onUpdate, onDelete 
         {/* 说明 */}
         <TextInput
           label="问题说明"
-          value={question.Explanation}
+          value={question.Description}
           onChange={(e) => handleExplanationChange(e.target.value)}
           placeholder="可选：填写问题说明"
           style={{ marginTop: '0.5rem' }}

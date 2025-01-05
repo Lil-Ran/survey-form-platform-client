@@ -14,7 +14,7 @@ const SingleTextFillIn: React.FC<SingleTextFillInProps> = ({ question, onUpdate,
   };
 
   const handleExplanationChange = (explanation: string) => {
-    onUpdate({ ...question, Explanation: explanation });
+    onUpdate({ ...question, Description: explanation });
   };
 
   return (
@@ -36,7 +36,7 @@ const SingleTextFillIn: React.FC<SingleTextFillInProps> = ({ question, onUpdate,
       {/* 问题说明 */}
       <TextInput
         label="问题说明"
-        value={question.Explanation}
+        value={question.Description}
         onChange={(e) => handleExplanationChange(e.target.value)}
         placeholder="可选：请输入问题说明"
         labelProps={{
