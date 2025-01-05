@@ -5,3 +5,4 @@ export interface Survey {
   Title: string;
   questions: QuestionModel[];
 }
+

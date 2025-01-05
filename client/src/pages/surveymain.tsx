@@ -12,6 +12,7 @@ export function DoubleNavbar() {
   const [active, setActive] = useState('问卷中心');
   const [activeLinksKey, setActiveLinksKey] = useState('surveyCenter');
   const [activeLink, setActiveLink] = useState<string | null>('所有问卷');
+  const [answerCenter, setAnswerCenter] = useState<{ id: string, name: string }[]>([]);
 
   const handleMainLinkClick = (link: { label: string, linksKey: string }) => {
     setActive(link.label);
@@ -46,13 +47,13 @@ export function DoubleNavbar() {
             <div className={classes.logo}>
               <MantineLogo type="mark" size={30} />
             </div>
-            <MainLinks active={active} handleMainLinkClick={handleMainLinkClick} />
+            <MainLinks active={active} handleMainLinkClick={handleMainLinkClick} setAnswerCenter={setAnswerCenter} />
           </div>
           <div className={classes.main}>
             <Title order={4} className={classes.title}>
               {active}
             </Title>
-            <Links activeLinksKey={activeLinksKey} activeLink={activeLink} setActiveLink={setActiveLink} />
+            <Links activeLinksKey={activeLinksKey} activeLink={activeLink} setActiveLink={setActiveLink} answerCenter={answerCenter} />
           </div>
         </div>
       </nav>

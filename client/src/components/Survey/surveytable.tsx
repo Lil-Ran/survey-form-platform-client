@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   Center,
   Group,
@@ -17,24 +17,10 @@ import classes from '../../styles/SurveyMainStyles.module.css';
 import dayjs from 'dayjs';
 import { QRCodeCanvas } from 'qrcode.react';  // 引入QRCode库
 import SurveyPreview from '../../pages/SurveyPreview'; // 引入SurveyPreview组件
-import { QuestionModel } from '../../models/QuestionModel';
 import { mdiArrowDown, mdiArrowUp, mdiArrowUpDown, mdiDatabase, mdiEye, mdiMagnify, mdiPencil, mdiSettingsHelper, mdiShare, mdiTrashCan } from '@mdi/js';
 import Icon from '@mdi/react';
+import api,{SurveyInfoModel,SurveyStatus} from '@Api';
 
-export interface RowData {
-  surveyId: string;
-  accessId: string;
-  title: string;
-  status: string;
-  responseCount: number;
-  ownerId: string;
-  ownerName: string;
-  createTime: string;
-  lastUpdateTime: string;
-  lastUpdataUserID: string;
-  lastUpdateUserName: string;
-  questions: QuestionModel[];
-}
 
 interface ThProps {
   children: React.ReactNode;
@@ -65,19 +51,18 @@ function keys<T extends object>(obj: T): (keyof T)[] {
   return Object.keys(obj) as (keyof T)[];
 }
 
-
-function filterData(data: RowData[], search: string) {
+function filterData(data: SurveyInfoModel[], search: string) {
   const query = search.toLowerCase().trim();
   return data.filter((item) =>
     keys(data[0]).some((key) =>
-      ['title', 'ownerName'].includes(key) && item[key].toString().toLowerCase().includes(query)
+      ['title', 'ownerName'].includes(key as string) && item[key] != null && typeof item[key] === 'string' && item[key].toLowerCase().includes(query)
     )
   );
 }
 
 function sortData(
-  data: RowData[],
-  payload: { sortBy: keyof RowData | null; reversed: boolean; search: string }
+  data: SurveyInfoModel[],
+  payload: { sortBy: keyof SurveyInfoModel | null; reversed: boolean; search: string }
 ) {
   const { sortBy } = payload;
 
@@ -88,30 +73,14 @@ function sortData(
   return filterData(
     [...data].sort((a, b) => {
       if (payload.reversed) {
-        return b[sortBy].toString().localeCompare(a[sortBy].toString());
+        return String(b[sortBy]).localeCompare(String(a[sortBy]));
       }
 
-      return a[sortBy].toString().localeCompare(b[sortBy].toString());
+      return String(a[sortBy]).localeCompare(String(b[sortBy]));
     }),
     payload.search
   );
 }
-
-// TODO 转为后端实现
-const exampleRow: RowData = {
-  surveyId: '1',
-  accessId: '2',
-  title: '中山大学大山中',
-  status: 'Ongoing',
-  responseCount: 0,
-  ownerId: '001',
-  ownerName: '张三丰',
-  createTime: '2023-12-28',
-  lastUpdateTime: '2024-11-15',
-  lastUpdataUserID: '0000',
-  lastUpdateUserName: '李四爷',
-  questions: [], // Add an empty array for questions
-};
 
 const columnHeaders = {
   title: '标题',
@@ -131,9 +100,10 @@ const statusMap: { [key: string]: string } = {
   Deleted: 'Deleted',
 };
 
-export function SurveyTable({ filter }: { filter: (row: RowData) => boolean }) {
+
+export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => boolean }) {
   const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState<keyof RowData | null>(null);
+  const [sortBy, setSortBy] = useState<keyof SurveyInfoModel | null>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
   const [activePage, setActivePage] = useState(1);
   const itemsPerPage = 15;
@@ -142,16 +112,30 @@ export function SurveyTable({ filter }: { filter: (row: RowData) => boolean }) {
   const [shareModalOpened, setShareModalOpened] = useState(false); // 用于控制分享二维码Modal的状态
   const [shareLink, setShareLink] = useState(''); // 用于保存生成的分享链接
   const [previewModalOpened, setPreviewModalOpened] = useState(false); // 用于控制预览Modal的状态
-  const [previewSurvey, setPreviewSurvey] = useState<RowData | null>(null); // 用于保存预览的问卷数据
+  const [previewSurvey, setPreviewSurvey] = useState<SurveyInfoModel | null>(null); // 用于保存预览的问卷数据
+  const [data, setData] = useState<SurveyInfoModel[]>([]);
 
-  const data: RowData[] = useMemo(() => Array.from({ length: 50 }, (_, index) => ({
-    ...exampleRow,
-    surveyId: (index + 1).toString(), // 确保每个对象的 surveyId 唯一
-  })), []);
+  useEffect(() => {
+    const fetchSurveys = async () => {
+      try {
+        const response = await api.surveyManage.surveyList();
+        if (response.status === 200 && Array.isArray(response.data.data)) {
+          setData(response.data.data as unknown as SurveyInfoModel[]);
+          setSortedData(response.data.data as unknown as SurveyInfoModel[]); // 设置排序后的数据
+        } else {
+          console.error('Unexpected response data format:', response);
+        }
+      } catch (error) {
+        console.error('Failed to fetch surveys:', error);
+      }
+    };
+
+    void fetchSurveys();
+  }, []);
 
   const [sortedData, setSortedData] = useState(data);
 
-  const setSorting = useCallback((field: keyof RowData) => {
+  const setSorting = useCallback((field: keyof SurveyInfoModel) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
     setReverseSortDirection(reversed);
     setSortBy(field);
@@ -164,11 +148,27 @@ export function SurveyTable({ filter }: { filter: (row: RowData) => boolean }) {
     setSortedData(sortData(data, { sortBy, reversed: reverseSortDirection, search: value }));
   }, [sortBy, reverseSortDirection, data]);
 
-  const handleCreateSurvey = useCallback(() => {
-    // 处理创建问卷的逻辑
-    console.log('创建问卷:', newSurveyTitle);
-    setModalOpened(false);
+  const handleCreateSurvey = useCallback(async () => {
+    try {
+      const newSurvey = { title: newSurveyTitle };
+      await api.surveyManage.surveyCreateCreate(newSurvey);
+      const response = await api.surveyManage.surveyList();
+      setData(response.data.data as unknown as SurveyInfoModel[]);
+      setModalOpened(false);
+    } catch (error) {
+      console.error('Failed to create survey:', error);
+    }
   }, [newSurveyTitle]);
+
+  const handleDeleteSurvey = useCallback(async (surveyId: string) => {
+    try {
+      await api.surveyManage.surveySwitchCreate({ surveyId });
+      const response = await api.surveyManage.surveyList();
+      setData(response.data.data as unknown as SurveyInfoModel[]);
+    } catch (error) {
+      console.error('Failed to delete survey:', error);
+    }
+  }, []);
 
   const generateShareLink = useCallback((surveyId: string) => {
     return `https://survey/${surveyId}`; // 这里用实际的链接替换
@@ -180,7 +180,7 @@ export function SurveyTable({ filter }: { filter: (row: RowData) => boolean }) {
     setShareModalOpened(true); // 打开分享Modal
   }, [generateShareLink]);
 
-  const handlePreviewClick = useCallback((survey: RowData) => {
+  const handlePreviewClick = useCallback((survey: SurveyInfoModel) => {
     setPreviewSurvey(survey);
     setPreviewModalOpened(true); // 打开预览Modal
   }, []);
@@ -221,12 +221,12 @@ export function SurveyTable({ filter }: { filter: (row: RowData) => boolean }) {
             <ActionIcon><Icon path={mdiDatabase} /></ActionIcon>
           </Tooltip>
           <Tooltip label="删除" withArrow>
-            <ActionIcon><Icon path={mdiTrashCan} /></ActionIcon>
+            <ActionIcon onClick={() => { void handleDeleteSurvey(row.surveyId); }}><Icon path={mdiTrashCan} /></ActionIcon>
           </Tooltip>
         </Group>
       </Table.Td>
     </Table.Tr>
-  )), [paginatedData, handlePreviewClick, handleShareClick]);
+  )), [paginatedData, handlePreviewClick, handleShareClick, handleDeleteSurvey]);
 
   return (
     <ScrollArea>
@@ -248,7 +248,7 @@ export function SurveyTable({ filter }: { filter: (row: RowData) => boolean }) {
                 key={key}
                 sorted={sortBy === key}
                 reversed={reverseSortDirection}
-                onSort={() => setSorting(key as keyof RowData)}
+                onSort={() => setSorting(key as keyof SurveyInfoModel)}
               >
                 {columnHeaders[key as keyof typeof columnHeaders]}
               </Th>
@@ -288,7 +288,7 @@ export function SurveyTable({ filter }: { filter: (row: RowData) => boolean }) {
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => setNewSurveyTitle(event.currentTarget.value)}
         />
         <Group justify="space-around" mt="md">
-          <Button onClick={handleCreateSurvey} style={{ width: '120px' }}>创建</Button>
+          <Button onClick={() => { void handleCreateSurvey(); }} style={{ width: '120px' }}>创建</Button>
           <Button variant="outline" onClick={() => setModalOpened(false)} style={{ width: '120px' }}>取消</Button>
         </Group>
       </Modal>

@@ -11,6 +11,7 @@ import {
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import classes from '../styles/login.module.css';
+import api from '@Api';
 
 export interface User {
   username: string;
@@ -28,13 +29,26 @@ const Register = () => {
   const navigate = useNavigate();
 
   // 注册逻辑
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (password !== confirmPassword) {
       setPasswordError(true);
       return;
     }
-    //TODO 接入注册API接口
-    alert('注册成功！');
+
+    try {
+      const newUser = {
+        userName: username,
+        password,
+        email,
+        emailCode: '123456', // 假设需要一个邮箱验证码
+      };
+      await api.account.accountRegisterCreate(newUser);
+      alert('注册成功！');
+      void navigate('/login');
+    } catch (error) {
+      console.error('Failed to register:', error);
+      alert('注册失败，请重试！');
+    }
   };
 
   return (
@@ -89,7 +103,7 @@ const Register = () => {
             }
           />
           <PasswordInput
-            label="密码"
+            label="确认密码"
             placeholder="请重新输入您的密码"
             required
             mt="md"
@@ -99,7 +113,7 @@ const Register = () => {
             }
             error={passwordError ? '两次输入的密码不一致' : null}
           />
-          <Button fullWidth mt="xl" onClick={handleRegister}>
+          <Button fullWidth mt="xl" onClick={() => { void handleRegister(); }}>
             注册
           </Button>
         </Paper>

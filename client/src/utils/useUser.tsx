@@ -13,14 +13,13 @@ const useUser = () => {
     refreshInterval: 0,
     shouldRetryOnError: false,
     revalidateOnFocus: false,
-    onErrorRetry: async () => {
-      mutate(undefined, false)
-      navigate('/')
+    onErrorRetry: () => {
+      void mutate(undefined, false)
+      void navigate('/')
       showNotification({
         color: 'red',
         message: '未登录或登录已过期',
       })
-      return
     },
   })
 

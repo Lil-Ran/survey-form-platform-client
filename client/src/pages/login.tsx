@@ -40,7 +40,7 @@ const Login = () => {
         void navigate(params.get('from') ?? '/surveymain')
       }, 200)
     }
-  }, [user, needRedirect])
+  }, [user, needRedirect, navigate, params])
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -72,13 +72,14 @@ const Login = () => {
         loading: false,
       })
       setNeedRedirect(true)
-      mutate()
-    } catch (err: any) {
+      void mutate()
+    } catch (err) {
+      const errorMessage = (err as { response?: { data?: { message?: string } } }).response?.data?.message || '登录失败，请重试';
       showNotification({
         id: 'login-status',
         color: 'red',
         title: '出错了',
-        message: err.response.data.message,
+        message: errorMessage,
         icon: <Icon path={mdiClose} size={1} />,
         autoClose: true,
         loading: false,
@@ -137,7 +138,7 @@ const Login = () => {
               忘记密码?
             </Anchor>
           </Group>
-          <Button fullWidth mt="xl" disabled={disabled} onClick={handleLogin}>
+          <Button fullWidth mt="xl" disabled={disabled} onClick={(event) => { void handleLogin(event); }}>
             登录
           </Button>
         </Paper>
