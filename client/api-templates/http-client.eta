@@ -120,6 +120,12 @@ export class HttpClient<SecurityDataType = unknown> {
           body = JSON.stringify(body);
         }
 
+        const debug_log_url = this.instance.defaults.baseURL + path;
+        if (!debug_log_url) {
+          throw new Error('Must provide a proper URL as target');
+        }
+        console.log(`Calling API: ${debug_log_url}`);
+
         return this.instance.request({
             ...requestParams,
             headers: {

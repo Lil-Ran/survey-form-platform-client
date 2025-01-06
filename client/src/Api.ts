@@ -574,11 +574,11 @@ export class HttpClient<SecurityDataType = unknown> {
       body = JSON.stringify(body);
     }
 
-    const url = this.instance.defaults.baseURL + path;
-    if (!url) {
-      throw new Error('Must provide a proper URL as target');
+    const debug_log_url = this.instance.defaults.baseURL + path;
+    if (!debug_log_url) {
+      throw new Error("Must provide a proper URL as target");
     }
-    console.log(`Calling API: ${url}`);
+    console.log(`Calling API: ${debug_log_url}`);
 
     return this.instance.request({
       ...requestParams,
@@ -1344,7 +1344,6 @@ const api = new Api();
 export default api;
 
 export const fetcher = async (path: string, query?: Record<string, unknown>) => {
-
   return await api
     .request({ path, query })
     .then((res) => res.data)
