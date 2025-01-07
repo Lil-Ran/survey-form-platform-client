@@ -162,9 +162,19 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
     }
   }, [newSurveyTitle]);
 
-  const handleDeleteSurvey = useCallback(async (surveyId: string) => {
+  interface SwitchSurveyRequest {
+    surveyId: string;
+    status: string;
+  }
+
+  const handleDeleteSurvey = useCallback(async (surveyId: string, status: string) => {
     try {
-      await api.surveyManage.surveySwitchCreate({ surveyId });
+      const requestData: SwitchSurveyRequest = {
+        surveyId,
+        status
+      };
+  
+      await api.surveyManage.surveySwitchCreate(requestData);
       const response = await api.surveyManage.surveyList();
       setData(response.data.data as unknown as SurveyInfoModel[]);
     } catch (error) {
@@ -227,7 +237,7 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
             <ActionIcon><Icon path={mdiDatabase} /></ActionIcon>
           </Tooltip>
           <Tooltip label="删除" withArrow>
-            <ActionIcon onClick={() => { void handleDeleteSurvey(row.surveyId); }}><Icon path={mdiTrashCan} /></ActionIcon>
+            <ActionIcon onClick={() => { void handleDeleteSurvey(row.surveyId,"Deleted"); }}><Icon path={mdiTrashCan} /></ActionIcon>
           </Tooltip>
         </Group>
       </Table.Td>

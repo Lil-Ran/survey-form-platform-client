@@ -859,6 +859,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     surveySwitchCreate: (
       data: {
         surveyId: string;
+        status: string;
       },
       params: RequestParams = {},
     ) =>
