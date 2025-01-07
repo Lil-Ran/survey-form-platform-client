@@ -1,8 +1,9 @@
 import { QuestionModel } from "./QuestionModel";
 
 export interface Survey {
-  SurveyID: string;
-  Title: string;
+  id: string;
+  title: string;
+  isopening: boolean;
   questions: QuestionModel[];
 }
 

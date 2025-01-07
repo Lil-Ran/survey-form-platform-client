@@ -1,18 +1,50 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Box, Button, Flex, TextInput, Text } from '@mantine/core';
+import { useNavigate, useLocation } from 'react-router-dom'; // 引入 useLocation
 import QuestionEditor from '../components/Question/QuestionEditor';
 import { QuestionModel } from '../models/QuestionModel';
 import { Survey } from '../models/SurveyModel';
-import { saveAs } from 'file-saver'; // 引入file-saver库
+import api from '@Api';
+import { saveAs } from 'file-saver';
 
 const SurveyEditor: React.FC = () => {
+  const location = useLocation(); // 使用 useLocation 获取当前路径
+  const navigate = useNavigate();
+  const surveyId = location.pathname.split('/').pop(); // 从路径中获取问卷ID
   const [survey, setSurvey] = useState<Survey>({
-    SurveyID: Math.random().toString(36).substr(2, 9),
-    Title: '新建问卷',
-    questions: [],
+    id: surveyId || '',
+    title: '新建',
+    isopening: false,
+    questions: []
   });
 
-  const questionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({}); // 用于存储每个问题的引用
+  const questionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  useEffect(() => {
+    const fetchSurvey = async () => {
+      if (surveyId) {
+        try {
+          const response = await api.questionEdit.editQuestionsDetail(surveyId);
+          if (response.status === 200) {
+            const surveyData: Survey = {
+              id: response.data.id,
+              title: response.data.title,
+              isopening: response.data.isopening,
+              questions: response.data.questions,
+            };
+            setSurvey(surveyData);
+            console.log('获取问卷详情成功:', surveyData);
+          } else {
+            console.error('获取问卷详情失败:', response.data);
+          }
+        } catch (error) {
+          console.error('获取问卷详情时发生错误:', error);
+        }
+      }
+    };
+
+    void fetchSurvey();
+  }, [surveyId]);
 
   // 添加新问题
   const handleAddQuestion = (type: string) => {
@@ -25,7 +57,7 @@ const SurveyEditor: React.FC = () => {
       QuestionID: Math.random().toString(36).substr(2, 9), // 生成随机ID
       QuestionLabel: '',
       QuestionType: type,
-      SurveyID: survey.SurveyID.toString(),
+      SurveyID: survey.id,
       TextFillIns: [],
       Title: '',
     };
@@ -33,15 +65,30 @@ const SurveyEditor: React.FC = () => {
     switch (type) {
       case 'SingleChoice':
         newQuestion.QuestionLabel = '单选题';
-        newQuestion.Options = [{ OptionContent: '', OptionID: Math.random().toString(36).substr(2, 9) }];
+        newQuestion.Options = [{
+          OptionContent: '',
+          OptionID: Math.random().toString(36).substr(2, 9),
+          QuestionID: newQuestion.QuestionID,
+          SurveyID: survey.id
+        }];
         break;
       case 'MultiChoice':
         newQuestion.QuestionLabel = '多选题';
-        newQuestion.Options = [{ OptionContent: '', OptionID: Math.random().toString(36).substr(2, 9) }];
+        newQuestion.Options = [{
+          OptionContent: '',
+          OptionID: Math.random().toString(36).substr(2, 9),
+          QuestionID: newQuestion.QuestionID,
+          SurveyID: survey.id
+        }];
         break;
       case 'SingleTextFillIn':
         newQuestion.QuestionLabel = '单项文本填空';
-        newQuestion.TextFillIns = [{ TextContent: '', TextFillInID: Math.random().toString(36).substr(2, 9) }];
+        newQuestion.TextFillIns = [{
+          TextContent: '',
+          TextFillInID: Math.random().toString(36).substr(2, 9),
+          QuestionID: newQuestion.QuestionID,
+          SurveyID: survey.id
+        }];
         break;
       case 'MultiTextFillIn':
         newQuestion.QuestionLabel = '多项文本填空';
@@ -49,7 +96,15 @@ const SurveyEditor: React.FC = () => {
         break;
       case 'SingleNumFillIn':
         newQuestion.QuestionLabel = '单项数字填空';
-        newQuestion.NumFillIns = [{ NumContent: 0, LeastNum: 0, MaxNum: 100, Precision: 0, NumFillInID: Math.random().toString(36).substr(2, 9) }];
+        newQuestion.NumFillIns = [{
+          NumContent: 0,
+          LeastNum: 0,
+          MaxNum: 100,
+          Precision: 0,
+          NumFillInID: Math.random().toString(36).substr(2, 9),
+          QuestionID: newQuestion.QuestionID,
+          SurveyID: survey.id
+        }];
         break;
       case 'MultiNumFillIn':
         newQuestion.QuestionLabel = '多项数字填空';
@@ -84,16 +139,25 @@ const SurveyEditor: React.FC = () => {
   };
 
   // 保存问卷
-  const handleSaveSurvey = () => {
-    console.log('保存问卷:', survey);
-    // 在此处添加保存逻辑，例如发送到服务器或保存到本地存储
+  const handleSaveSurvey = async () => {
+    try {
+      const response = await api.questionEdit.editQeditCreate(survey.id, survey);
+      if (response.status === 200) {
+        console.log('问卷保存成功:', response.data);
+        navigate('/surveymain'); // 保存成功后返回问卷列表
+      } else {
+        console.error('问卷保存失败:', response.data);
+      }
+    } catch (error) {
+      console.error('问卷保存时发生错误:', error);
+    }
   };
 
   // 导出问卷数据
   const handleExportSurvey = () => {
     const surveyData = JSON.stringify(survey, null, 2); // 将问卷数据转换为JSON字符串
     const blob = new Blob([surveyData], { type: 'application/json' }); // 创建Blob对象
-    saveAs(blob, `${survey.Title}.json`); // 使用file-saver保存文件
+    saveAs(blob, `${survey.title}.json`); // 使用file-saver保存文件
   };
 
   const scrollToQuestion = (questionID: string) => {
@@ -266,8 +330,8 @@ const SurveyEditor: React.FC = () => {
             {/* 问卷标题 */}
             <TextInput
               label="问卷标题"
-              value={survey.Title}
-              onChange={(e) => setSurvey({ ...survey, Title: e.target.value })}
+              value={survey.title}
+              onChange={(e) => setSurvey({ ...survey, title: e.target.value })}
               placeholder="请输入问卷标题"
               style={{ marginBottom: '0.75rem' }}
               labelProps={{

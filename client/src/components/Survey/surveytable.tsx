@@ -13,6 +13,7 @@ import {
   Tooltip,
   ActionIcon,
 } from '@mantine/core';
+import { useNavigate } from 'react-router-dom'; // 引入 useNavigate
 import classes from '../../styles/SurveyMainStyles.module.css';
 import dayjs from 'dayjs';
 import { QRCodeCanvas } from 'qrcode.react';  // 引入QRCode库
@@ -114,6 +115,7 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
   const [previewModalOpened, setPreviewModalOpened] = useState(false); // 用于控制预览Modal的状态
   const [previewSurvey, setPreviewSurvey] = useState<SurveyInfoModel | null>(null); // 用于保存预览的问卷数据
   const [data, setData] = useState<SurveyInfoModel[]>([]);
+  const navigate = useNavigate(); // 使用 useNavigate
 
   useEffect(() => {
     const fetchSurveys = async () => {
@@ -185,6 +187,10 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
     setPreviewModalOpened(true); // 打开预览Modal
   }, []);
 
+  const handleDesignClick = useCallback((surveyId: string) => {
+    navigate(`/SurveyEditor/${surveyId}`); // 跳转到问卷设计页面
+  }, [navigate]);
+
   const filteredData = useMemo(() => sortedData.filter(filter), [sortedData, filter]);
   const paginatedData = useMemo(() => filteredData.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage), [filteredData, activePage, itemsPerPage]);
 
@@ -201,7 +207,7 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
             <ActionIcon><Icon path={mdiSettingsHelper} /></ActionIcon>
           </Tooltip>
           <Tooltip label="设计" withArrow>
-            <ActionIcon><Icon path={mdiPencil} /></ActionIcon>
+            <ActionIcon onClick={() => handleDesignClick(row.surveyId)}><Icon path={mdiPencil} /></ActionIcon>
           </Tooltip>
           <Tooltip label="预览" withArrow>
             <ActionIcon
@@ -226,7 +232,7 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
         </Group>
       </Table.Td>
     </Table.Tr>
-  )), [paginatedData, handlePreviewClick, handleShareClick, handleDeleteSurvey]);
+  )), [paginatedData, handlePreviewClick, handleShareClick, handleDesignClick, handleDeleteSurvey]);
 
   return (
     <ScrollArea>

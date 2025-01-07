@@ -54,6 +54,10 @@ export interface NumFillIn {
      * 数字填空ID
      */
     NumFillInID: string;
+    /** 问题id */
+    QuestionID: string;
+    /** 问卷id */
+    SurveyID: string;
     [property: string]: any;
 }
 
@@ -66,6 +70,10 @@ export interface Option {
      * 选项ID
      */
     OptionID: string;
+     /** 问题id */
+    QuestionID: string;
+    /** 问卷id */
+    SurveyID: string;
     [property: string]: any;
 }
 
@@ -74,5 +82,9 @@ export interface TextFillIn {
      * 文本填空ID
      */
     TextFillInID: string;
+    /** 问题id */
+    QuestionID: string;
+    /** 问卷id */
+    SurveyID: string;
     [property: string]: any;
 }
