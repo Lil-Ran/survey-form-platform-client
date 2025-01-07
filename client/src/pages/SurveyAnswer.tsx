@@ -109,13 +109,13 @@ const SurveyAnswer: React.FC = () => {
       };
       const response = await api.respondentAccess.respondentSubmitCreate(survey.id, surveyResponse);
       if (response.status === 200) {
-        console.log('问卷保存成功:', response.data);
+        console.log('答卷提交成功:', response.data);
         navigate('/surveymain'); // 保存成功后返回问卷列表
       } else {
-        console.error('问卷保存失败:', response.data);
+        console.error('答卷提交失败:', response.data);
       }
     } catch (error) {
-      console.error('问卷保存时发生错误:', error);
+      console.error('答卷提交时发生错误:', error);
     }
   };
 
