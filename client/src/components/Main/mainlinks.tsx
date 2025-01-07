@@ -20,7 +20,7 @@ const mainLinksMockdata: MainLink[] = [
 ];
 
 
-const MainLinks = ({ active, handleMainLinkClick, setAnswerCenter }: { active: string, handleMainLinkClick: (link: MainLink) => void, setAnswerCenter: (surveys: { name: string }[]) => void }) => {
+const MainLinks = ({ active, handleMainLinkClick, setAnswerCenter }: { active: string, handleMainLinkClick: (link: MainLink) => void, setAnswerCenter: (surveys: {id:string, name: string }[]) => void }) => {
   const handleAnswerCenterClick = useCallback(async (link: MainLink) => {
       if (link.linksKey === 'answerCenter') {
         try {
