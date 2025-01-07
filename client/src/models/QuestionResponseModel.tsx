@@ -59,7 +59,7 @@ export interface OptionResponse {
     /**
      * 是否被选
      */
-    isSelect: boolean;
+    IsSelect: boolean;
     /**
      * 选项内容
      */

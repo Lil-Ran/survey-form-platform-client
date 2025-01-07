@@ -1,19 +1,50 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Box, Button, TextInput, Flex, Text } from '@mantine/core';
+import { useNavigate, useLocation } from 'react-router-dom';
 import QuestionDisplay from '../components/Answer/QuestionDisplay'; // 需要根据不同题型动态渲染的组件
 import { Survey } from '../models/SurveyModel'; // 问卷模型
 import { SurveyResponse } from '../models/SurveyResponseModel'; // 答卷模型
-import exampleSurvey from '../models/exampleSurvey';
+import api from '@Api';
 import { saveAs } from 'file-saver'; // 引入file-saver库
 
-interface SurveyAnswerProps {
-  survey: Survey; // 接收问卷数据
-  onSubmit: (answers: { [questionID: string]: string | string[] }) => void; // 提交答案的回调
-}
-
-const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
+const SurveyAnswer: React.FC = () => {
+  const location = useLocation(); // 使用 useLocation 获取当前路径
+  const navigate = useNavigate();
+  const surveyId = location.pathname.split('/').pop(); // 从路径中获取问卷ID
+  const [survey, setSurvey] = useState<Survey>({
+    id: surveyId || '',
+    title: '',
+    isopening: false,
+    questions: [],
+  });
   const [answers, setAnswers] = useState<{ [questionID: string]: string | string[] }>({});
   const questionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({}); // 用于存储每个问题的引用
+
+  useEffect(() => {
+    const fetchSurvey = async () => {
+      if (surveyId) {
+        try {
+          const response = await api.questionEdit.editQuestionsDetail(surveyId);
+          if (response.status === 200) {
+            const surveyData: Survey = {
+              id: response.data.id,
+              title: response.data.title,
+              isopening: response.data.isopening,
+              questions: response.data.questions,
+            };
+            setSurvey(surveyData);
+            console.log('获取问卷详情成功:', surveyData);
+          } else {
+            console.error('获取问卷详情失败:', response.data);
+          }
+        } catch (error) {
+          console.error('获取问卷详情时发生错误:', error);
+        }
+      }
+    };
+
+    void fetchSurvey();
+  }, [surveyId]);
 
   // 处理用户选择或输入答案
   const handleAnswerChange = (questionID: string, selectedOptionID: string | string[]) => {
@@ -24,8 +55,68 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
   };
 
   // 提交问卷
-  const handleSubmit = () => {
-    onSubmit(answers); // 调用提交回调函数
+  const handleSubmit = async () => {
+    console.log('User answers:', answers);
+    try {
+      const responseID = Math.random().toString(36).substr(2, 9);
+      const surveyResponse: SurveyResponse = {
+        ResponseID: responseID,
+        SurveyID: survey.id,
+        QuestionResponse: survey.questions.map((question) => {
+          const questionResponse: {
+            QuestionID: string;
+            ResponseID: string;
+            NumFillIns: { NumContent: number; NumFillInID: string; QuestionID: string; ResponseID: string }[];
+            Options: { IsSelect: boolean; OptionContent: string; OptionID: string; QuestionID: string; ResponseID: string }[];
+            TextFillIns: { TextContent: string; TextFillInID: string; QuestionID: string; ResponseID: string }[];
+            QuestionType: string;
+          } = {
+            QuestionID: question.QuestionID,
+            ResponseID: responseID,
+            NumFillIns: [],
+            Options: [],
+            TextFillIns: [],
+            QuestionType: question.QuestionType,
+          };
+
+          if (question.QuestionType === 'SingleChoice' || question.QuestionType === 'MultiChoice') {
+            questionResponse.Options = question.Options.map((option) => ({
+              IsSelect: Array.isArray(answers[question.QuestionID]) && (answers[question.QuestionID] as string[]).includes(option.OptionID),
+              OptionContent: option.OptionContent,
+              OptionID: option.OptionID,
+              QuestionID: question.QuestionID,
+              ResponseID: responseID,
+            }));
+          } else if (question.QuestionType === 'SingleNumFillIn' || question.QuestionType === 'MultiNumFillIn') {
+            questionResponse.NumFillIns = question.NumFillIns.map((numFillIn, index) => ({
+              NumContent: parseFloat(Array.isArray(answers[question.QuestionID]) ? (answers[question.QuestionID] as string[])[index] : answers[question.QuestionID] as string),
+              NumFillInID: numFillIn.NumFillInID,
+              QuestionID: question.QuestionID,
+              ResponseID: responseID,
+            }));
+
+          } else if (question.QuestionType === 'SingleTextFillIn' || question.QuestionType === 'MultiTextFillIn') {
+            questionResponse.TextFillIns = question.TextFillIns.map((textFillIn, index) => ({
+              TextContent: Array.isArray(answers[question.QuestionID]) ? (answers[question.QuestionID] as string[])[index] : answers[question.QuestionID] as string,
+              TextFillInID: textFillIn.TextFillInID,
+              QuestionID: question.QuestionID,
+              ResponseID: responseID,
+            }));
+          }
+
+          return questionResponse;
+        }),
+      };
+      const response = await api.respondentAccess.respondentSubmitCreate(survey.id, surveyResponse);
+      if (response.status === 200) {
+        console.log('问卷保存成功:', response.data);
+        navigate('/surveymain'); // 保存成功后返回问卷列表
+      } else {
+        console.error('问卷保存失败:', response.data);
+      }
+    } catch (error) {
+      console.error('问卷保存时发生错误:', error);
+    }
   };
 
   // 导出答卷数据
@@ -33,13 +124,13 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
     const responseID = Math.random().toString(36).substr(2, 9);
     const surveyResponse: SurveyResponse = {
       ResponseID: responseID,
-      SurveyID: survey.SurveyID,
-      questionsResponse: survey.questions.map((question) => {
+      SurveyID: survey.id,
+      QuestionResponse: survey.questions.map((question) => {
         const questionResponse: {
           QuestionID: string;
           ResponseID: string;
           NumFillIns: { NumContent: number; NumFillInID: string; QuestionID: string; ResponseID: string }[];
-          Options: { isSelect: boolean; OptionContent: string; OptionID: string; QuestionID: string; ResponseID: string }[];
+          Options: { IsSelect: boolean; OptionContent: string; OptionID: string; QuestionID: string; ResponseID: string }[];
           TextFillIns: { TextContent: string; TextFillInID: string; QuestionID: string; ResponseID: string }[];
           QuestionType: string;
         } = {
@@ -53,7 +144,7 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
 
         if (question.QuestionType === 'SingleChoice' || question.QuestionType === 'MultiChoice') {
           questionResponse.Options = question.Options.map((option) => ({
-            isSelect: Array.isArray(answers[question.QuestionID]) && (answers[question.QuestionID] as string[]).includes(option.OptionID),
+            IsSelect: Array.isArray(answers[question.QuestionID]) && (answers[question.QuestionID] as string[]).includes(option.OptionID),
             OptionContent: option.OptionContent,
             OptionID: option.OptionID,
             QuestionID: question.QuestionID,
@@ -82,7 +173,7 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
 
     const responseData = JSON.stringify(surveyResponse, null, 2); // 将答卷数据转换为JSON字符串
     const blob = new Blob([responseData], { type: 'application/json' }); // 创建Blob对象
-    saveAs(blob, `${survey.Title}_response.json`); // 使用file-saver保存文件
+    saveAs(blob, `${survey.title}_response.json`); // 使用file-saver保存文件
   };
 
   const scrollToQuestion = (questionID: string) => {
@@ -95,7 +186,6 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
     }
   };
 
-  
   return (
     <>
       {/* 顶部固定的导航栏 */}
@@ -177,7 +267,7 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
             {/* 问卷标题 */}
             <TextInput
               label="问卷标题"
-              value={survey.Title}
+              value={survey.title}
               readOnly
               style={{ marginBottom: '0.75rem' }}
               labelProps={{
@@ -239,21 +329,4 @@ const SurveyAnswer: React.FC<SurveyAnswerProps> = ({ survey, onSubmit }) => {
   );
 };
 
-// SurveyAnswerParentComponent 组件定义, 负责提供 surveyData 和 handleSubmit 函数，并将它们作为 props 传递给 SurveyAnswer 组件。
-const SurveyAnswerParentComponent: React.FC = () => {
-  const surveyData: Survey = exampleSurvey;
-
-  // 处理提交的答案
-  const handleSubmit = (answers: { [questionID: string]: string | string[] }) => {
-    console.log('User answers:', answers);
-    // 在这里可以处理提交逻辑，例如发送数据到服务器等
-  };
-
-  return (
-    <div>
-      <SurveyAnswer survey={surveyData} onSubmit={handleSubmit} />
-    </div>
-  );
-};
-
-export default SurveyAnswerParentComponent;
+export default SurveyAnswer;

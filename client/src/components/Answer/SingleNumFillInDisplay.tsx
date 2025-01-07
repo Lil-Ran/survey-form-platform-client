@@ -20,7 +20,7 @@ const SingleNumFillInDisplay: React.FC<SingleNumFillInDisplayProps> = ({ questio
   return (
     <div>
       <Text size="lg">{question.Title}</Text>
-      <Text size="sm" style={{ marginTop: '0.5rem' }}>{question.Explanation}</Text>
+      <Text size="sm" style={{ marginTop: '0.5rem' }}>{question.Description}</Text>
 
       <div style={{ marginTop: '1rem' }}>
         <TextInput

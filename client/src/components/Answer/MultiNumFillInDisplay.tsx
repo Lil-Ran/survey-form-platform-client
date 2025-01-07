@@ -21,7 +21,7 @@ const MultiNumFillInDisplay: React.FC<MultiNumFillInDisplayProps> = ({ question,
   return (
     <div>
       <Text size="lg">{question.Title}</Text>
-      <Text size="sm" style={{ marginTop: '0.5rem' }}>{question.Explanation}</Text>
+      <Text size="sm" style={{ marginTop: '0.5rem' }}>{question.Description}</Text>
 
       <div style={{ marginTop: '1rem' }}>
         {/* 渲染每个数字填空 */}

@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom'
 import Login from './login'
 import DoubleNavbar from './surveymain'
 import SurveyEditor from './SurveyEditor'
+import SurveyAnswer from './SurveyAnswer'
 const routes = [
     {
         path: '/',
@@ -21,9 +22,13 @@ const routes = [
         element: <SurveyEditor />,
     },
     {
-        path: '*',
-        element: <Navigate to="/login" />,
+        path: '/SurveyAnswer/:id',
+        element: <SurveyAnswer />,
     },
+    // {
+    //     path: '*',
+    //     element: <Navigate to="/login" />,
+    // },
 ]
 
 export default routes

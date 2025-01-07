@@ -34,7 +34,7 @@ const MultiChoiceDisplay: React.FC<MultiChoiceDisplayProps> = ({ question, onAns
     <div>
       <Text size="lg">{question.Title}</Text>
       <Text size="sm" color="gray" style={{ marginTop: '0.5rem' }}>
-        {question.Explanation}
+        {question.Description}
       </Text>
 
       <div style={{ marginTop: '1rem' }}>

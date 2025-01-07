@@ -33,7 +33,7 @@ const SingleChoiceDisplay: React.FC<SingleChoiceDisplayProps> = ({ question, onA
   return (
     <div>
       <Text size="lg">{question.Title}</Text>
-      <Text size="sm" style={{ marginTop: '0.5rem' }}>{question.Explanation}</Text>
+      <Text size="sm" style={{ marginTop: '0.5rem' }}>{question.Description}</Text>
 
       <div style={{ marginTop: '1rem' }}>
         {/* 使用 Radio.Group 来处理单选逻辑 */}
