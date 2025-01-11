@@ -28,6 +28,8 @@ const MultiChoice: React.FC<MultiChoiceProps> = ({ question, onUpdate, onDelete 
     const newOption: Option = {
       OptionContent: '',
       OptionID: Math.random().toString(36).substr(2, 9), // 生成随机 ID
+      QuestionID: question.QuestionID,
+      SurveyID: question.SurveyID,
     };
     onUpdate({ ...question, Options: [...question.Options, newOption] });
   };

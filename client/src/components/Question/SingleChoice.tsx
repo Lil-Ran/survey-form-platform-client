@@ -28,6 +28,8 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({ question, onUpdate, onDelet
     const newOption: Option = {
       OptionContent: '',
       OptionID: Math.random().toString(36).substr(2, 9), // 生成随机 ID
+      QuestionID: question.QuestionID, // Assuming QuestionID is available in question
+      SurveyID: question.SurveyID, // Assuming SurveyID is available in question
     };
     onUpdate({ ...question, Options: [...question.Options, newOption] });
   };
