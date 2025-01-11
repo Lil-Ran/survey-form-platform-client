@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Box, Button, Flex, TextInput, Text } from '@mantine/core';
 import { useNavigate, useLocation } from 'react-router-dom'; // 引入 useLocation
 import QuestionEditor from '../components/Question/QuestionEditor';
@@ -13,7 +13,7 @@ const SurveyEditor: React.FC = () => {
   const surveyId = location.pathname.split('/').pop(); // 从路径中获取问卷ID
   const [survey, setSurvey] = useState<Survey>({
     id: surveyId || '',
-    title: '新建',
+    title: '新建问卷',
     isopening: false,
     questions: []
   });
