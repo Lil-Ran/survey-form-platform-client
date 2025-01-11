@@ -1,16 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Button, TextInput, Flex, Text } from '@mantine/core';
-import { useNavigate, useLocation } from 'react-router-dom';
-import QuestionDisplay from '../components/Answer/QuestionDisplay'; // 需要根据不同题型动态渲染的组件
-import { Survey } from '../models/SurveyModel'; // 问卷模型
-import { SurveyResponse } from '../models/SurveyResponseModel'; // 答卷模型
+import { useNavigate, useParams } from 'react-router-dom'
+import QuestionDisplay from '@Components/Answer/QuestionDisplay.tsx'; // 需要根据不同题型动态渲染的组件
+import { Survey } from '../../models/SurveyModel.tsx'; // 问卷模型
+import { SurveyResponse } from '../../models/SurveyResponseModel.tsx'; // 答卷模型
 import api from '@Api';
-import { saveAs } from 'file-saver'; // 引入file-saver库
+import { saveAs } from 'file-saver';
 
 const SurveyAnswer: React.FC = () => {
-  const location = useLocation(); // 使用 useLocation 获取当前路径
   const navigate = useNavigate();
-  const surveyId = location.pathname.split('/').pop(); // 从路径中获取问卷ID
+  const { surveyId } = useParams(); // 从路径中获取问卷ID
   const [survey, setSurvey] = useState<Survey>({
     id: surveyId || '',
     title: '',

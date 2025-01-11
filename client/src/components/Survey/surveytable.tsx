@@ -13,10 +13,10 @@ import {
   Tooltip,
   Select,
 } from '@mantine/core';
-import { useNavigate } from 'react-router-dom'; // 引入 useNavigate
+import { useNavigate } from 'react-router-dom';
 import classes from '../../styles/surveyTable.module.css';
 import dayjs from 'dayjs';
-import { QRCodeCanvas } from 'qrcode.react';  // 引入QRCode库
+import { QRCodeCanvas } from 'qrcode.react';
 import api,{SurveyInfoModel} from '@Api';
 import searchSurvey from '/search.svg'
 import sort_asc from '/sortasc.svg'
@@ -191,13 +191,13 @@ export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: Sur
 
   const handleDeleteSurvey = useCallback(async () => {
     if (!surveyToDelete) return;
-  
+
     try {
       const requestData: SwitchSurveyRequest = {
         surveyId: surveyToDelete,
         status: "Deleted"
       };
-  
+
       await api.surveyManage.surveySwitchCreate(requestData);
       const response = await api.surveyManage.surveyList();
       setData(response.data.data as unknown as SurveyInfoModel[]);
@@ -213,13 +213,13 @@ export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: Sur
 
   const handleSettingSurvey = useCallback(async () => {
     if (!selectedSurvey) return;
-  
+
     try {
       const requestData: SwitchSurveyRequest = {
         surveyId: selectedSurvey.surveyId,
         status: surveyStatus,
       };
-  
+
       await api.surveyManage.surveySwitchCreate(requestData);
       const response = await api.surveyManage.surveyList();
       setData(response.data.data as unknown as SurveyInfoModel[]);
@@ -233,14 +233,14 @@ export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: Sur
     }
   }, [selectedSurvey, surveyStatus]);
 
-  
+
   const openDeleteModal = useCallback((surveyId: string) => {
     setSurveyToDelete(surveyId);
     setDeleteModalOpened(true);
   }, []);
 
   const generateShareLink = useCallback((surveyId: string) => {
-    return `http://localhost:63000/SurveyAnswer/${surveyId}`; 
+    return `http://localhost:63000/SurveyAnswer/${surveyId}`;
   }, []);
 
   const handleShareClick = useCallback((surveyId: string) => {
@@ -278,7 +278,7 @@ export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: Sur
       <Table.Td className={classes.tableTitle}>{row.title}</Table.Td>
       <Table.Td className={classes.tableStatus}>{statusMap[row.status]}</Table.Td>
       <Table.Td className={classes.tableResponseCount}>{row.responseCount}</Table.Td>
-      <Table.Td className={classes.tableOwner}>{`${row.ownerName} (${row.ownerId})`}</Table.Td>
+      <Table.Td className={classes.tableOwner}>{row.ownerName}</Table.Td>
       <Table.Td className={classes.tableCreateTime}>{dayjs(row.createTime).format('YYYY-MM-DD')}</Table.Td>
       <Table.Td className={classes.tableActions}>
         <Group gap="xs">

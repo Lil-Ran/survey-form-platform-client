@@ -1,16 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Button, Flex, TextInput, Text } from '@mantine/core';
-import { useNavigate, useLocation } from 'react-router-dom'; // 引入 useLocation
-import QuestionEditor from '../components/Question/QuestionEditor';
-import { QuestionModel } from '../models/QuestionModel';
-import { Survey } from '../models/SurveyModel';
+import { useNavigate, useParams } from 'react-router-dom'
+import QuestionEditor from '@Components/Question/QuestionEditor.tsx';
+import { QuestionModel } from '../../models/QuestionModel.tsx';
+import { Survey } from '../../models/SurveyModel.tsx';
 import api from '@Api';
 import { saveAs } from 'file-saver';
 
 const SurveyEditor: React.FC = () => {
-  const location = useLocation(); // 使用 useLocation 获取当前路径
   const navigate = useNavigate();
-  const surveyId = location.pathname.split('/').pop(); // 从路径中获取问卷ID
+  const { surveyId } = useParams();
   const [survey, setSurvey] = useState<Survey>({
     id: surveyId || '',
     title: '新建问卷',
@@ -195,7 +194,7 @@ const SurveyEditor: React.FC = () => {
         justify="space-between"
         style={{
           position: 'fixed', // 固定位置
-          top: '2rem', 
+          top: '2rem',
           width: '100%', // 占满屏幕宽度
           padding: '1.25rem',
           backgroundColor: '#ffffff', // 背景色防止内容遮挡
@@ -254,7 +253,7 @@ const SurveyEditor: React.FC = () => {
           </Button>
           <Button
             color="green"
-            onClick={() => { void handleSaveSurvey(); }} 
+            onClick={() => { void handleSaveSurvey(); }}
             style={{ flex: 1, height: '35px', fontSize: '1rem', fontWeight: 'bold' }}
           >
             保存问卷

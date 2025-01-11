@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Box, Text, Center, Paper, Title } from '@mantine/core';
 import api, { QuestionModel, ResponseModel, QuestionResponseModel } from '@Api';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import WordCloud from 'react-wordcloud';
 
 interface SurveyAnalysisProps {
