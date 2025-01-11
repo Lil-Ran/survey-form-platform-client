@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Center,
@@ -9,15 +9,14 @@ import {
   Tooltip,
 } from '@mantine/core';
 import classes from '../../styles/surveyTable.module.css';
-import api, { QuestionModel } from '@Api';
-import { SurveyResponseModel } from '../../models/SurveyMetaModel';
+import api, { QuestionModel, ResponseModel, QuestionResponseModel } from '@Api';
 
 interface AnswerTableProps {
   surveyId: string;
 }
 
 const AnswerTable: React.FC<AnswerTableProps> = ({ surveyId }) => {
-  const [data] = useState<SurveyResponseModel[]>([]);
+  const [data, setData] = useState<ResponseModel[]>([]);
   const [questions, setQuestions] = useState<QuestionModel[]>([]);
   const [activePage, setActivePage] = useState(1);
   const itemsPerPage = 15;
@@ -37,17 +36,16 @@ const AnswerTable: React.FC<AnswerTableProps> = ({ surveyId }) => {
     };
 
     const fetchAnswers = async () => {
-      // 模拟数据获取
-      // try {
-      //   const response = await api.responseDetail.surveyResponses(surveyId);
-      //   if (response.status === 200 && Array.isArray(response.data.data)) {
-      //     setData(response.data.data as unknown as SurveyResponseModel[]);
-      //   } else {
-      //     console.error('Unexpected response data format:', response);
-      //   }
-      // } catch (error) {
-      //   console.error('Failed to fetch answers:', error);
-      // }
+      try {
+        const response = await api.responseDetail.surveyDetail(surveyId);
+        if (response.status === 200 && Array.isArray(response.data)) {
+          setData(response.data);
+        } else {
+          console.error('Unexpected response data format:', response);
+        }
+      } catch (error) {
+        console.error('Failed to fetch answers:', error);
+      }
     };
 
     void fetchQuestions();
@@ -56,30 +54,37 @@ const AnswerTable: React.FC<AnswerTableProps> = ({ surveyId }) => {
 
   const paginatedData = useMemo(() => data.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage), [data, activePage, itemsPerPage]);
 
+  const renderAnswer = (questionResponse: QuestionResponseModel) => {
+    switch (questionResponse.QuestionType) {
+      case 'SingleChoice':
+      case 'MultiChoice':
+        return questionResponse.Options.filter(option => option.IsSelect).map(option => option.OptionContent).join(', ');
+      case 'SingleNumFillIn':
+      case 'MultiNumFillIn':
+        return questionResponse.NumFillIns.map(numFillIn => numFillIn.NumContent).join(', ');
+      case 'SingleTextFillIn':
+      case 'MultiTextFillIn':
+        return questionResponse.TextFillIns.map(textFillIn => textFillIn.TextContent).join(', ');
+      default:
+        return '';
+    }
+  };
+
   const rows = useMemo(() => paginatedData.map((response, index) => (
     <Table.Tr key={index}>
-      <Table.Td>{response.id}</Table.Td>
-      {response.questions.map((question, qIndex) => (
-        <Table.Td key={qIndex}>{question.QuestionLabel}</Table.Td>
-      ))}
+      <Table.Td>{response.ResponseID}</Table.Td>
+      {questions.map((question) => {
+        const questionResponse = response.QuestionResponse.find(qr => qr.QuestionID === question.QuestionID);
+        return (
+          <Table.Td key={question.QuestionID}>
+            {questionResponse ? renderAnswer(questionResponse) : '无回答'}
+          </Table.Td>
+        );
+      })}
     </Table.Tr>
-  )), [paginatedData]);
+  )), [paginatedData, questions]);
 
-  const handleColHover = useCallback(async (questionId: string) => {
-    try {
-      const response = await api.questionEdit.editQuestionsDetail(surveyId);
-      if (response.status === 200 && Array.isArray(response.data.questions)) {
-        const question = response.data.questions.find((q: QuestionModel) => q.QuestionID === questionId);
-        if (question) {
-          console.log('Question details:', question);
-        }
-      } else {
-        console.error('Unexpected response data format:', response);
-      }
-    } catch (error) {
-      console.error('Failed to fetch question details:', error);
-    }
-  }, [surveyId]);
+
 
   return (
     <ScrollArea>
@@ -96,11 +101,7 @@ const AnswerTable: React.FC<AnswerTableProps> = ({ surveyId }) => {
         </Table.Tbody>
         <Table.Tbody>
           {rows.length > 0 ? (
-            rows.map((row, index) => (
-              <Table.Tr key={index} onMouseEnter={() => {if (row.key) { void handleColHover(row.key); }}}>
-                {row}
-              </Table.Tr>
-            ))
+            rows
           ) : (
             <Table.Tr>
               <Table.Td colSpan={questions.length + 1}>
@@ -128,3 +129,4 @@ AnswerTable.propTypes = {
 };
 
 export default AnswerTable;
+

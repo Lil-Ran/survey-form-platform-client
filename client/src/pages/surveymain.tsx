@@ -1,13 +1,19 @@
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense, useEffect, useCallback } from 'react';
 import { Title } from '@mantine/core';
 import { MantineLogo } from '@mantinex/mantine-logo';
-import { useLocation } from 'react-router-dom'; 
+import { useLocation } from 'react-router-dom';
+
+interface LocationState {
+  mainLink?: string;
+  surveyId?: string;
+}
 import MainLinks from '../components/Main/mainlinks';
 import Links from '../components/Main/links';
 import SurveyTable from '../components/Survey/surveytable';
 import AnswerTable from '../components/Survey/answertable'; // 引入 AnswerTable 组件
 import SurveyAnalysis from '../components/Survey/surveyanalysis'; // 引入 SurveyAnalysis 组件
 import classes from '../styles/SurveyMainStyles.module.css';
+import api from '@Api';
 
 export function DoubleNavbar() {
   const [active, setActive] = useState('问卷中心');
@@ -27,25 +33,55 @@ export function DoubleNavbar() {
     }
   };
 
-  interface LocationState {
-    surveyId?: string;
-    mainLink?: string;
-  }
-  
+  const fetchSurveys = useCallback(async () => {
+    try {
+      const response = await api.surveyManage.surveyList();
+      if (response.status === 200 && Array.isArray(response.data.data)) {
+        const surveys = response.data.data
+          .filter((survey: { status: string }) => survey.status !== 'Deleted')
+          .map((survey: { title: string, surveyId: string }) => ({
+            name: survey.title,
+            id: survey.surveyId
+          }));
+        setAnswerCenter(surveys);
+        setAnalysisCenter(surveys);
+      } else {
+        console.error('Unexpected response data format:', response);
+      }
+    } catch (error) {
+      console.error('Failed to fetch surveys:', error);
+    }
+  }, []);
+
   useEffect(() => {
     const state = location.state as LocationState;
 
     if (state?.mainLink === 'answerCenter' || state?.mainLink === 'surveyAnalysis') {
-      setActive(state.mainLink === 'answerCenter' ? '答卷中心' : '问卷分析');
-      setActiveLinksKey(state.mainLink);
       if (state?.surveyId) {
-        const survey = answerCenter.find(s => s.id === state.surveyId);
-        if (survey) {
-          setActiveLink({ id: survey.id, name: survey.name }); // 确保获取到问卷的 ID 和名称
-        }
+        fetchSurveys()
+          .then(() => {
+            if (state.mainLink === 'answerCenter') {
+              setActive('答卷中心');
+              setActiveLinksKey(state.mainLink);
+              const survey = answerCenter.find(s => s.id === state.surveyId);
+              if (survey) {
+                setActiveLink({ id: survey.id, name: survey.name }); // 确保获取到问卷的 ID 和名称
+              }
+            } else if (state.mainLink === 'surveyAnalysis') {
+              setActive('问卷分析');
+              setActiveLinksKey(state.mainLink);
+              const survey = analysisCenter.find(s => s.id === state.surveyId);
+              if (survey) {
+                setActiveLink({ id: survey.id, name: survey.name }); // 确保获取到问卷的 ID 和名称
+              }
+            }
+          })
+          .catch(error => {
+            console.error('Failed to fetch surveys:', error);
+          });
       }
     }
-  }, [location.state, answerCenter]);
+  }, [location.state]);
 
   const getFilteredData = () => {
     switch (activeLink?.name) {
@@ -76,7 +112,7 @@ export function DoubleNavbar() {
             <Title order={4} className={classes.title}>
               {active}
             </Title>
-            <Links activeLinksKey={activeLinksKey} activeLink={activeLink} setActiveLink={setActiveLink} answerCenter={answerCenter} />
+            <Links activeLinksKey={activeLinksKey} activeLink={activeLink} setActiveLink={setActiveLink} answerCenter={answerCenter} analysisCenter={analysisCenter} />
           </div>
         </div>
       </nav>

@@ -308,7 +308,7 @@ const SurveyAnswer: React.FC = () => {
               <Button
                 color="green"
                 size="lg"
-                onClick={() => void handleSubmit}
+                onClick={() => { void handleSubmit(); }} // 修复此处的调用
                 style={{ fontSize: '1rem', fontWeight: 'bold', marginRight: '1rem' }}
               >
                 提交答卷

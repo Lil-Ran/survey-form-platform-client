@@ -240,7 +240,7 @@ export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: Sur
   }, []);
 
   const generateShareLink = useCallback((surveyId: string) => {
-    return `https://survey/${surveyId}`; // 这里用实际的链接替换
+    return `http://localhost:63000/SurveyAnswer/${surveyId}`; 
   }, []);
 
   const handleShareClick = useCallback((surveyId: string) => {
@@ -257,6 +257,11 @@ export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: Sur
   const handleDataClick = useCallback((surveyId: string) => {
     handleMainLinkClick({ label: '答卷中心', linksKey: 'answerCenter' });
     void navigate('/surveymain', { state: { surveyId, mainLink: 'answerCenter' } });
+  }, [handleMainLinkClick, navigate]);
+
+  const handleAnalysisClick = useCallback((surveyId: string) => {
+    handleMainLinkClick({ label: '问卷分析', linksKey: 'surveyAnalysis' });
+    void navigate('/surveymain', { state: { surveyId, mainLink: 'surveyAnalysis' } });
   }, [handleMainLinkClick, navigate]);
 
   const openStatusModal = useCallback((survey: SurveyInfoModel) => {
@@ -290,7 +295,7 @@ export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: Sur
             <img src={viewSurvey} style={{ width: '17px', height: '17px' }} onClick={() => handleDataClick(row.surveyId)} />
           </Tooltip>
           <Tooltip label="分析" withArrow>
-            <img src={attribute} style={{ width: '17px', height: '17px' }} onClick={() => { /* handle click event */ }} />
+            <img src={attribute} style={{ width: '17px', height: '17px' }} onClick={() => handleAnalysisClick(row.surveyId)} />
           </Tooltip>
           <Tooltip label="删除" withArrow>
             <img src={deleteSurvey} style={{ width: '17px', height: '17px' }} onClick={() => openDeleteModal(row.surveyId)} />
@@ -298,7 +303,7 @@ export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: Sur
         </Group>
       </Table.Td>
     </Table.Tr>
-  )), [paginatedData, handleShareClick, handleDesignClick, openDeleteModal, handleDataClick, openStatusModal]);
+  )), [paginatedData, handleShareClick, handleDesignClick, openDeleteModal, handleDataClick, handleAnalysisClick, openStatusModal]);
 
   return (
     <ScrollArea>
@@ -432,6 +437,7 @@ export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: Sur
           data={[
             { value: 'Ongoing', label: '正在收集' },
             { value: 'Suspended', label: '暂停收集' },
+            { value: 'Locked', label: '等待收集' },
           ]}
         />
         <Group justify="space-around" mt="md">

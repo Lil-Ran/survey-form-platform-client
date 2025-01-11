@@ -10,7 +10,7 @@ const linksMockData: { [key: string]: string[] } = {
   settings: ['设置1', '设置2','留待组会讨论'],
 };
 
-const Links = ({ activeLinksKey, activeLink, setActiveLink, answerCenter }: { activeLinksKey: string, activeLink: { id: string, name: string } | null, setActiveLink: (link: { id: string, name: string }) => void, answerCenter: { id: string, name: string }[] }) => {
+const Links = ({ activeLinksKey, activeLink, setActiveLink, answerCenter, analysisCenter }: { activeLinksKey: string, activeLink: { id: string, name: string } | null, setActiveLink: (link: { id: string, name: string }) => void, answerCenter: { id: string, name: string }[], analysisCenter: { id: string, name: string }[] }) => {
   const handleSurveyClick = useCallback(async (surveyId: string, surveyName: string) => {
     try {
       const response = await api.respondentAccess.respondentQuestionsDetail(surveyId);
@@ -23,9 +23,10 @@ const Links = ({ activeLinksKey, activeLink, setActiveLink, answerCenter }: { ac
 
   const links = useMemo(() => {
     if (activeLinksKey === 'answerCenter' || activeLinksKey === 'surveyAnalysis') {
+      const surveys = activeLinksKey === 'answerCenter' ? answerCenter : analysisCenter;
       return (
         <div className={classes.scrollable}>
-          {answerCenter.map((survey) => (
+          {surveys.map((survey) => (
             <a
               className={classes.link}
               data-active={activeLink?.id === survey.id || undefined}
@@ -57,7 +58,7 @@ const Links = ({ activeLinksKey, activeLink, setActiveLink, answerCenter }: { ac
         {link}
       </a>
     ));
-  }, [activeLinksKey, activeLink, setActiveLink, answerCenter, handleSurveyClick]);
+  }, [activeLinksKey, activeLink, setActiveLink, answerCenter, analysisCenter, handleSurveyClick]);
 
   return <>{links}</>;
 };
