@@ -13,7 +13,7 @@ const SurveyEditor: React.FC = () => {
   const surveyId = location.pathname.split('/').pop(); // 从路径中获取问卷ID
   const [survey, setSurvey] = useState<Survey>({
     id: surveyId || '',
-    title: '新建',
+    title: '新建问卷',
     isopening: false,
     questions: []
   });

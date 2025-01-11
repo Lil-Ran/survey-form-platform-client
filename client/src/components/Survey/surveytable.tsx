@@ -240,7 +240,8 @@ export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: Sur
   }, []);
 
   const generateShareLink = useCallback((surveyId: string) => {
-    return `https://survey/${surveyId}`; // 这里用实际的链接替换
+    // return `https://survey/${surveyId}`; // 这里用实际的链接替换
+    return `http://localhost:63000/SurveyAnswer/${surveyId}`; // 生成本地测试用的链接
   }, []);
 
   const handleShareClick = useCallback((surveyId: string) => {

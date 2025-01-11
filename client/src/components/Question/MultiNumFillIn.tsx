@@ -22,9 +22,11 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
   const handleAddNumFillIn = () => {
     const newNumFillIn: NumFillIn = {
       NumFillInID: Math.random().toString(36).substr(2, 9), // 生成随机 ID
+      QuestionID: question.QuestionID, // 添加 QuestionID
+      SurveyID: question.SurveyID, // 添加 SurveyID
     };
 
-    const explanation = question.Explanation || '';
+    const explanation = question.Description || '';
     const placeholder = `[填空]`; // 占位符
 
     const newExplanation =
@@ -34,7 +36,7 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
 
     onUpdate({
       ...question,
-      Explanation: newExplanation,
+      Description: newExplanation,
       NumFillIns: [...question.NumFillIns, newNumFillIn],
     });
     
@@ -48,7 +50,7 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    const explanation = question.Explanation || '';
+    const explanation = question.Description || '';
     const placeholder = '[填空]';
     if (e.key === 'Backspace' || e.key === 'Delete') {
       const cursorPosition = explanationCursor;
@@ -65,7 +67,7 @@ const MultiNumFillIn: React.FC<MultiNumFillInProps> = ({ question, onUpdate, onD
         // 删除对应的数字填空项
         const newNumFillIns = question.NumFillIns.slice(0, -1);
 
-        onUpdate({ ...question, Explanation: newExplanation, NumFillIns: newNumFillIns });
+        onUpdate({ ...question, Description: newExplanation, NumFillIns: newNumFillIns });
         setExplanationCursor(cursorPosition - placeholder.length); // 更新光标位置
       }
     }

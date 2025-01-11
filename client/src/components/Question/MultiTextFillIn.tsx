@@ -23,8 +23,10 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
     const newTextFillIn: TextFillIn = {
       TextContent: '',
       TextFillInID: Math.random().toString(36).substr(2, 9),
+      QuestionID: question.QuestionID,
+      SurveyID: question.SurveyID,
     };
-    const explanation = question.Explanation || '';
+    const explanation = question.Description || '';
     const placeholder = `[填空]`; // 使用标识符作为占位符
 
     const newExplanation =
@@ -34,7 +36,7 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
 
     onUpdate({
       ...question,
-      Explanation: newExplanation,
+      Description: newExplanation,
       TextFillIns: [...question.TextFillIns, newTextFillIn],
     });
 
@@ -48,7 +50,7 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    const explanation = question.Explanation || '';
+    const explanation = question.Description || '';
     const placeholder = '[填空]';
     if (e.key === 'Backspace' || e.key === 'Delete') {
       const cursorPosition = explanationCursor;
@@ -65,7 +67,7 @@ const MultiTextFillIn: React.FC<MultiTextFillInProps> = ({ question, onUpdate, o
         // 删除对应的文本填空项
         const newTextFillIns = question.TextFillIns.slice(0, -1);
 
-        onUpdate({ ...question, Explanation: newExplanation, TextFillIns: newTextFillIns });
+        onUpdate({ ...question, Description: newExplanation, TextFillIns: newTextFillIns });
         setExplanationCursor(cursorPosition - placeholder.length); // 更新光标位置
       }
     }
