@@ -11,17 +11,24 @@ import {
   Button,
   Modal,
   Tooltip,
-  ActionIcon,
+  Select,
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom'; // 引入 useNavigate
-import classes from '../../styles/SurveyMainStyles.module.css';
+import classes from '../../styles/surveyTable.module.css';
 import dayjs from 'dayjs';
 import { QRCodeCanvas } from 'qrcode.react';  // 引入QRCode库
-import SurveyPreview from '../../pages/SurveyPreview'; // 引入SurveyPreview组件
-import { mdiArrowDown, mdiArrowUp, mdiArrowUpDown, mdiDatabase, mdiEye, mdiMagnify, mdiPencil, mdiSettingsHelper, mdiShare, mdiTrashCan } from '@mdi/js';
-import Icon from '@mdi/react';
-import api,{SurveyInfoModel,SurveyStatus} from '@Api';
-
+import api,{SurveyInfoModel} from '@Api';
+import searchSurvey from '/search.svg'
+import sort_asc from '/sortasc.svg'
+import sort_desc from '/sortdesc.svg'
+import text_justify from '/textjustify.svg'
+import setting from '/setting.svg'
+import shareSurvey from '/shareSurvey.svg'
+import deleteSurvey from '/deleteSurvey.svg'
+import viewSurvey from '/previewSurvey.svg'
+import surveyEdit from '/surveyEdit.svg'
+import attribute from '/attribute.svg'
+import { showNotification } from '@mantine/notifications'; // 引入通知库
 
 interface ThProps {
   children: React.ReactNode;
@@ -31,19 +38,29 @@ interface ThProps {
 }
 
 function Th({ children, reversed, sorted, onSort }: ThProps) {
-  const icon = sorted ? (reversed ? mdiArrowUp : mdiArrowDown) : mdiArrowUpDown
+  const icon = sorted ? (reversed ? sort_asc : sort_desc) : text_justify;
+  const isSortable = !['问卷状态', '操作'].includes(children as string); // 判断是否允许排序
+
   return (
     <Table.Th className={classes.th}>
-      <UnstyledButton onClick={onSort} className={classes.control}>
-        <Group justify="space-between">
+      {isSortable ? (
+        <UnstyledButton onClick={onSort} className={classes.control}>
+          <Group justify="center">
+            <Text fw={500} fz="sm">
+              {children}
+            </Text>
+            <Center className={classes.icon} style={{ marginLeft: 'auto' }}>
+              <img src={icon} alt="sort icon" />
+            </Center>
+          </Group>
+        </UnstyledButton>
+      ) : (
+        <Group justify="center">
           <Text fw={500} fz="sm">
             {children}
           </Text>
-          <Center className={classes.icon}>
-            <Icon path={icon} />
-          </Center>
         </Group>
-      </UnstyledButton>
+      )}
     </Table.Th>
   );
 }
@@ -101,21 +118,23 @@ const statusMap: { [key: string]: string } = {
   Deleted: 'Deleted',
 };
 
-
-export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => boolean }) {
+export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: SurveyInfoModel) => boolean, handleMainLinkClick: (link: { label: string, linksKey: string }) => void, setActiveLink: (link: string) => void }) {
   const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState<keyof SurveyInfoModel | null>(null);
-  const [reverseSortDirection, setReverseSortDirection] = useState(false);
+  const [sortBy, setSortBy] = useState<keyof SurveyInfoModel>('createTime'); // 默认以创建时间排序
+  const [reverseSortDirection, setReverseSortDirection] = useState(true); // 默认降序排列
   const [activePage, setActivePage] = useState(1);
   const itemsPerPage = 15;
   const [modalOpened, setModalOpened] = useState(false);
   const [newSurveyTitle, setNewSurveyTitle] = useState('');
   const [shareModalOpened, setShareModalOpened] = useState(false); // 用于控制分享二维码Modal的状态
   const [shareLink, setShareLink] = useState(''); // 用于保存生成的分享链接
-  const [previewModalOpened, setPreviewModalOpened] = useState(false); // 用于控制预览Modal的状态
-  const [previewSurvey, setPreviewSurvey] = useState<SurveyInfoModel | null>(null); // 用于保存预览的问卷数据
   const [data, setData] = useState<SurveyInfoModel[]>([]);
+  const [deleteModalOpened, setDeleteModalOpened] = useState(false); // 用于控制删除确认Modal的状态
+  const [surveyToDelete, setSurveyToDelete] = useState<string | null>(null); // 用于保存待删除的问卷ID
   const navigate = useNavigate(); // 使用 useNavigate
+  const [statusModalOpened, setStatusModalOpened] = useState(false);
+  const [selectedSurvey, setSelectedSurvey] = useState<SurveyInfoModel | null>(null);
+  const [surveyStatus, setSurveyStatus] = useState<string>('');
 
   useEffect(() => {
     const fetchSurveys = async () => {
@@ -123,7 +142,7 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
         const response = await api.surveyManage.surveyList();
         if (response.status === 200 && Array.isArray(response.data.data)) {
           setData(response.data.data as unknown as SurveyInfoModel[]);
-          setSortedData(response.data.data as unknown as SurveyInfoModel[]); // 设置排序后的数据
+          setSortedData(sortData(response.data.data as unknown as SurveyInfoModel[], { sortBy, reversed: reverseSortDirection, search })); // 设置排序后的数据
         } else {
           console.error('Unexpected response data format:', response);
         }
@@ -133,7 +152,7 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
     };
 
     void fetchSurveys();
-  }, []);
+  }, [sortBy, reverseSortDirection, search]);
 
   const [sortedData, setSortedData] = useState(data);
 
@@ -157,8 +176,11 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
       const response = await api.surveyManage.surveyList();
       setData(response.data.data as unknown as SurveyInfoModel[]);
       setModalOpened(false);
-    } catch (error) {
+      showNotification({ title: '成功', message: '问卷创建成功', color: 'green' }); // 显示成功通知
+      window.location.reload();
+      } catch (error) {
       console.error('Failed to create survey:', error);
+      showNotification({ title: '错误', message: '问卷创建失败', color: 'red' }); // 显示错误通知
     }
   }, [newSurveyTitle]);
 
@@ -167,19 +189,54 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
     status: string;
   }
 
-  const handleDeleteSurvey = useCallback(async (surveyId: string, status: string) => {
+  const handleDeleteSurvey = useCallback(async () => {
+    if (!surveyToDelete) return;
+  
     try {
       const requestData: SwitchSurveyRequest = {
-        surveyId,
-        status
+        surveyId: surveyToDelete,
+        status: "Deleted"
       };
   
       await api.surveyManage.surveySwitchCreate(requestData);
       const response = await api.surveyManage.surveyList();
       setData(response.data.data as unknown as SurveyInfoModel[]);
+      showNotification({ title: '成功', message: '问卷删除成功', color: 'green' });
+      setDeleteModalOpened(false);
+      setSurveyToDelete(null);
+      window.location.reload();
     } catch (error) {
       console.error('Failed to delete survey:', error);
+      showNotification({ title: '错误', message: '问卷删除失败', color: 'red' }); // 显示错误通知
     }
+  }, [surveyToDelete]);
+
+  const handleSettingSurvey = useCallback(async () => {
+    if (!selectedSurvey) return;
+  
+    try {
+      const requestData: SwitchSurveyRequest = {
+        surveyId: selectedSurvey.surveyId,
+        status: surveyStatus,
+      };
+  
+      await api.surveyManage.surveySwitchCreate(requestData);
+      const response = await api.surveyManage.surveyList();
+      setData(response.data.data as unknown as SurveyInfoModel[]);
+      showNotification({ title: '成功', message: '状态更改成功', color: 'green' });
+      setStatusModalOpened(false);
+      setSelectedSurvey(null);
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to change state:', error);
+      showNotification({ title: '错误', message: '状态更改失败', color: 'red' }); // 显示错误通知
+    }
+  }, [selectedSurvey, surveyStatus]);
+
+  
+  const openDeleteModal = useCallback((surveyId: string) => {
+    setSurveyToDelete(surveyId);
+    setDeleteModalOpened(true);
   }, []);
 
   const generateShareLink = useCallback((surveyId: string) => {
@@ -192,20 +249,27 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
     setShareModalOpened(true); // 打开分享Modal
   }, [generateShareLink]);
 
-  const handlePreviewClick = useCallback((survey: SurveyInfoModel) => {
-    setPreviewSurvey(survey);
-    setPreviewModalOpened(true); // 打开预览Modal
-  }, []);
 
   const handleDesignClick = useCallback((surveyId: string) => {
-    navigate(`/SurveyEditor/${surveyId}`); // 跳转到问卷设计页面
+    void navigate(`/SurveyEditor/${surveyId}`); // 跳转到问卷设计页面
   }, [navigate]);
+
+  const handleDataClick = useCallback((surveyId: string) => {
+    handleMainLinkClick({ label: '答卷中心', linksKey: 'answerCenter' });
+    void navigate('/surveymain', { state: { surveyId, mainLink: 'answerCenter' } });
+  }, [handleMainLinkClick, navigate]);
+
+  const openStatusModal = useCallback((survey: SurveyInfoModel) => {
+    setSelectedSurvey(survey);
+    setSurveyStatus(survey.status);
+    setStatusModalOpened(true);
+  }, []);
 
   const filteredData = useMemo(() => sortedData.filter(filter), [sortedData, filter]);
   const paginatedData = useMemo(() => filteredData.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage), [filteredData, activePage, itemsPerPage]);
 
   const rows = useMemo(() => paginatedData.map((row) => (
-    <Table.Tr key={row.surveyId}>
+    <Table.Tr key={row.surveyId} >
       <Table.Td className={classes.tableTitle}>{row.title}</Table.Td>
       <Table.Td className={classes.tableStatus}>{statusMap[row.status]}</Table.Td>
       <Table.Td className={classes.tableResponseCount}>{row.responseCount}</Table.Td>
@@ -214,49 +278,41 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
       <Table.Td className={classes.tableActions}>
         <Group gap="xs">
           <Tooltip label="属性" withArrow>
-            <ActionIcon><Icon path={mdiSettingsHelper} /></ActionIcon>
+            <img src={setting} style={{ width: '17px', height: '17px' }} onClick={() => openStatusModal(row)} />
           </Tooltip>
           <Tooltip label="设计" withArrow>
-            <ActionIcon onClick={() => handleDesignClick(row.surveyId)}><Icon path={mdiPencil} /></ActionIcon>
-          </Tooltip>
-          <Tooltip label="预览" withArrow>
-            <ActionIcon
-              onClick={() => handlePreviewClick(row)} // 点击预览按钮时触发
-            >
-              <Icon path={mdiEye} />
-            </ActionIcon>
+            <img src={surveyEdit} style={{ width: '17px', height: '17px' }} onClick={() => handleDesignClick(row.surveyId)} />
           </Tooltip>
           <Tooltip label="分享" withArrow>
-            <ActionIcon
-              onClick={() => handleShareClick(row.surveyId)} // 点击分享按钮时触发
-            >
-              <Icon path={mdiShare} />
-            </ActionIcon>
+            <img src={shareSurvey} style={{ width: '17px', height: '17px' }} onClick={() => handleShareClick(row.surveyId)} />
           </Tooltip>
-          <Tooltip label="数据" withArrow>
-            <ActionIcon><Icon path={mdiDatabase} /></ActionIcon>
+          <Tooltip label="答卷" withArrow>
+            <img src={viewSurvey} style={{ width: '17px', height: '17px' }} onClick={() => handleDataClick(row.surveyId)} />
+          </Tooltip>
+          <Tooltip label="分析" withArrow>
+            <img src={attribute} style={{ width: '17px', height: '17px' }} onClick={() => { /* handle click event */ }} />
           </Tooltip>
           <Tooltip label="删除" withArrow>
-            <ActionIcon onClick={() => { void handleDeleteSurvey(row.surveyId,"Deleted"); }}><Icon path={mdiTrashCan} /></ActionIcon>
+            <img src={deleteSurvey} style={{ width: '17px', height: '17px' }} onClick={() => openDeleteModal(row.surveyId)} />
           </Tooltip>
         </Group>
       </Table.Td>
     </Table.Tr>
-  )), [paginatedData, handlePreviewClick, handleShareClick, handleDesignClick, handleDeleteSurvey]);
+  )), [paginatedData, handleShareClick, handleDesignClick, openDeleteModal, handleDataClick, openStatusModal]);
 
   return (
     <ScrollArea>
       <Group mb="md" justify="space-between">
         <TextInput
           placeholder="搜索问卷标题或问卷发布者"
-          leftSection={<Icon path={mdiMagnify} />}
+          leftSection={<img src={searchSurvey} />}
           value={search}
           onChange={handleSearchChange}
           style={{ flex: 1, marginRight: '1rem' }}
         />
-        <Button onClick={() => setModalOpened(true)} style={{ width: '150px' }}>创建问卷</Button>
+        <Button onClick={() => setModalOpened(true)} style={{ width: '200px' }}>创建问卷</Button>
       </Group>
-      <Table horizontalSpacing="md" verticalSpacing="xs" miw={700} layout="fixed" className={classes.table}>
+      <Table horizontalSpacing="md" verticalSpacing="xs" miw={700} layout="fixed" className={classes.table} striped highlightOnHover withTableBorder withColumnBorders>
         <Table.Tbody>
           <Table.Tr>
             {Object.keys(columnHeaders).map((key) => (
@@ -352,14 +408,36 @@ export function SurveyTable({ filter }: { filter: (row: SurveyInfoModel) => bool
         />
       </Group>
     </Modal>
-    <Modal
-        opened={previewModalOpened}
-        onClose={() => setPreviewModalOpened(false)}
-        title="问卷预览"
+      <Modal
+        opened={deleteModalOpened}
+        onClose={() => setDeleteModalOpened(false)}
+        title="确定要删除此问卷吗？"
         centered
-        size="lg"
       >
-        {previewSurvey && <SurveyPreview survey={previewSurvey} />}
+        <Group justify="space-around" mt="md">
+          <Button onClick={() => { void handleDeleteSurvey(); }} style={{ width: '120px' }}>确认</Button>
+          <Button variant="outline" onClick={() => setDeleteModalOpened(false)} style={{ width: '120px' }}>取消</Button>
+        </Group>
+      </Modal>
+      <Modal
+        opened={statusModalOpened}
+        onClose={() => setStatusModalOpened(false)}
+        title="设置问卷状态"
+        centered
+      >
+        <Select
+          label="问卷状态"
+          value={surveyStatus}
+          onChange={(value) => setSurveyStatus(value || '')}
+          data={[
+            { value: 'Ongoing', label: '正在收集' },
+            { value: 'Suspended', label: '暂停收集' },
+          ]}
+        />
+        <Group justify="space-around" mt="md">
+          <Button onClick={() => { void handleSettingSurvey(); }} style={{ width: '120px' }}>保存</Button>
+          <Button variant="outline" onClick={() => setStatusModalOpened(false)} style={{ width: '120px' }}>取消</Button>
+        </Group>
       </Modal>
     </ScrollArea>
   );

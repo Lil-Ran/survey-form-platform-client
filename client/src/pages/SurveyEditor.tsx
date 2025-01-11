@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Box, Button, Flex, TextInput, Text } from '@mantine/core';
 import { useNavigate, useLocation } from 'react-router-dom'; // 引入 useLocation
 import QuestionEditor from '../components/Question/QuestionEditor';
@@ -144,7 +144,7 @@ const SurveyEditor: React.FC = () => {
       const response = await api.questionEdit.editQeditCreate(survey.id, survey);
       if (response.status === 200) {
         console.log('问卷保存成功:', response.data);
-        navigate('/surveymain'); // 保存成功后返回问卷列表
+        void navigate('/surveymain'); // 保存成功后返回问卷列表
       } else {
         console.error('问卷保存失败:', response.data);
       }
@@ -254,7 +254,7 @@ const SurveyEditor: React.FC = () => {
           </Button>
           <Button
             color="green"
-            onClick={handleSaveSurvey}
+            onClick={() => { void handleSaveSurvey(); }} 
             style={{ flex: 1, height: '35px', fontSize: '1rem', fontWeight: 'bold' }}
           >
             保存问卷
