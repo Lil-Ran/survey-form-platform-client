@@ -109,7 +109,7 @@ const SurveyAnswer: React.FC = () => {
       const response = await api.respondentAccess.respondentSubmitCreate(survey.id, surveyResponse);
       if (response.status === 200) {
         console.log('答卷提交成功:', response.data);
-        void navigate('/surveymain'); // 保存成功后返回问卷列表
+        void navigate('/thankyou'); // 保存成功后返回问卷列表
       } else {
         console.error('答卷提交失败:', response.data);
       }
