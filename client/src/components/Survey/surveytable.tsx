@@ -240,7 +240,7 @@ export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: Sur
   }, []);
 
   const generateShareLink = useCallback((surveyId: string) => {
-    return `http://localhost:63000/SurveyAnswer/${surveyId}`;
+    return `${window.location.protocol}//${window.location.host}/SurveyAnswer/${surveyId}`;
   }, []);
 
   const handleShareClick = useCallback((surveyId: string) => {

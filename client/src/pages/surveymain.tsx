@@ -1,6 +1,5 @@
 import { useState, Suspense, useEffect, useCallback } from 'react';
 import { Title } from '@mantine/core';
-import { MantineLogo } from '@mantinex/mantine-logo';
 import { useLocation } from 'react-router-dom';
 
 interface LocationState {
@@ -10,8 +9,8 @@ interface LocationState {
 import MainLinks from '../components/Main/mainlinks';
 import Links from '../components/Main/links';
 import SurveyTable from '../components/Survey/surveytable';
-import AnswerTable from '../components/Survey/answertable'; // 引入 AnswerTable 组件
-import SurveyAnalysis from '../components/Survey/surveyanalysis'; // 引入 SurveyAnalysis 组件
+import AnswerTable from '../components/Survey/answertable';
+import SurveyAnalysis from '../components/Survey/surveyanalysis';
 import classes from '../styles/SurveyMainStyles.module.css';
 import api from '@Api';
 
@@ -21,7 +20,7 @@ export function DoubleNavbar() {
   const [activeLink, setActiveLink] = useState<{ id: string, name: string } | null>(null);
   const [answerCenter, setAnswerCenter] = useState<{ id: string, name: string }[]>([]);
   const [analysisCenter, setAnalysisCenter] = useState<{ id: string, name: string }[]>([]);
-  const location = useLocation(); 
+  const location = useLocation();
 
   const handleMainLinkClick = (link: { label: string, linksKey: string }) => {
     setActive(link.label);
@@ -104,7 +103,6 @@ export function DoubleNavbar() {
         <div className={classes.wrapper}>
           <div className={classes.aside}>
             <div className={classes.logo}>
-              <MantineLogo type="mark" size={30} />
             </div>
             <MainLinks active={active} handleMainLinkClick={handleMainLinkClick} setAnswerCenter={setAnswerCenter} setAnalysisCenter={setAnalysisCenter} />
           </div>
