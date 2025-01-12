@@ -72,6 +72,7 @@ const Login = () => {
         loading: false,
       })
       setNeedRedirect(true)
+      setTimeout(() => {}, 500)
       void mutate()
     } catch (err) {
       const errorMessage = (err as { response?: { data?: { message?: string } } }).response?.data?.message || '登录失败，请重试';

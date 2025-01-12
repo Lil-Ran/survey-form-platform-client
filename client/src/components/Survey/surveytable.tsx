@@ -146,8 +146,11 @@ export function SurveyTable({ filter, handleMainLinkClick }: { filter: (row: Sur
         } else {
           console.error('Unexpected response data format:', response);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to fetch surveys:', error);
+        if (error.status && error.status === 401) {
+          navigate('/login')
+        }
       }
     };
 
