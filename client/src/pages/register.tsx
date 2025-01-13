@@ -11,49 +11,78 @@ import {
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import classes from '../styles/login.module.css';
-import api from '@Api';
+import api, { RegisterModel } from '@Api'
+import { showNotification } from '@mantine/notifications'
+import Icon from '@mdi/react'
+import { mdiCheck, mdiClose } from '@mdi/js'
 
-export interface User {
-  username: string;
-  password: string;
-  email: string;
-}
-
-// 注册组件
 const Register = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [registerData, setRegisterData] = useState<RegisterModel>({
+    email: '',
+    emailCode: '',
+    password: '',
+    userName: ''
+  })
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [email, setEmail] = useState('');
   const [passwordError, setPasswordError] = useState(false);
   const navigate = useNavigate();
 
-  // 注册逻辑
+  const handleSendEmail = async () => {
+    if (registerData.email.length === 0 || registerData.email.split('@').length !== 2) {
+      showNotification({
+        color: 'red',
+        message: '邮箱格式错误',
+        icon: <Icon path={mdiClose} size={1} />,
+      })
+      return
+    }
+
+    try {
+      await api.account.accountVerifyCreate({email: registerData.email})
+      showNotification({
+        color: 'teal',
+        message: '邮箱验证码发送成功',
+        icon: <Icon path={mdiCheck} size={1} />,
+      })
+    } catch (err) {
+      const errorMessage = (err as { response?: { data?: { message?: string } } }).response?.data?.message || '邮箱验证码发送失败';
+      showNotification({
+        color: 'red',
+        title: '出错了',
+        message: errorMessage,
+        icon: <Icon path={mdiClose} size={1} />,
+      })
+    }
+  }
+
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
+    if (registerData.password !== confirmPassword) {
       setPasswordError(true);
       return;
     }
 
     try {
-      const newUser = {
-        userName: username,
-        password,
-        email,
-        emailCode: '123456', // 假设需要一个邮箱验证码
-      };
-      await api.account.accountRegisterCreate(newUser);
-      alert('注册成功！');
-      void navigate('/login');
+      await api.account.accountRegisterCreate(registerData)
+      showNotification({
+        color: 'teal',
+        message: '注册成功',
+        icon: <Icon path={mdiCheck} size={1} />,
+      })
+      void navigate('/login')
     } catch (error) {
-      console.error('Failed to register:', error);
-      alert('注册失败，请重试！');
+      const errorMessage = (error as { response?: { data?: { message?: string } } }).response?.data?.message || '注册失败';
+      showNotification({
+        color: 'red',
+        title: '出错了',
+        message: errorMessage,
+        icon: <Icon path={mdiClose} size={1} />,
+      })
     }
   };
 
   return (
     <div style={{ backgroundColor: '#e0f7fa', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <Container size="lg" my={40} style={{ width: '100%', maxWidth: '400px' }}>
+      <Container size="lg" my={40} style={{ width: '100%', maxWidth: '500px' }}>
         <Title ta="center" className={classes.title} style={{ color: '#001f3f' }}>
           创建账号{' '}
           <Text
@@ -77,9 +106,9 @@ const Register = () => {
             label="用户名"
             placeholder="请输入您的用户名"
             required
-            value={username}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setUsername(event.currentTarget.value)
+            value={registerData.userName}
+            onChange={(e) =>
+              setRegisterData({ ...registerData, userName: e.target.value })
             }
           />
           <TextInput
@@ -87,9 +116,22 @@ const Register = () => {
             placeholder="请输入您的邮箱"
             required
             mt="md"
-            value={email}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setEmail(event.currentTarget.value)
+            value={registerData.email}
+            onChange={(e) =>
+              setRegisterData({ ...registerData, email: e.target.value })
+            }
+          />
+          <Button fullWidth variant='subtle' onClick={() => { void handleSendEmail(); }}>
+            发送邮箱验证码
+          </Button>
+          <TextInput
+            label="邮箱验证码"
+            placeholder="请输入邮箱验证码"
+            required
+            mt="md"
+            value={registerData.emailCode}
+            onChange={(e) =>
+              setRegisterData({ ...registerData, emailCode: e.target.value })
             }
           />
           <PasswordInput
@@ -97,14 +139,14 @@ const Register = () => {
             placeholder="请输入您的密码"
             required
             mt="md"
-            value={password}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setPassword(event.currentTarget.value)
+            value={registerData.password}
+            onChange={(e) =>
+              setRegisterData({ ...registerData, password: e.target.value })
             }
           />
           <PasswordInput
             label="确认密码"
-            placeholder="请重新输入您的密码"
+            placeholder="请再次输入您的密码"
             required
             mt="md"
             value={confirmPassword}
@@ -113,7 +155,7 @@ const Register = () => {
             }
             error={passwordError ? '两次输入的密码不一致' : null}
           />
-          <Button fullWidth mt="xl" onClick={() => { void handleRegister(); }}>
+          <Button fullWidth mt="lg" onClick={() => { void handleRegister(); }}>
             注册
           </Button>
         </Paper>

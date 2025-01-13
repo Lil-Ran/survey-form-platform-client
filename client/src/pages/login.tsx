@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import {
   Anchor,
   Button,
-  Checkbox,
+  // Checkbox,
   Container,
   Group,
   Paper,
@@ -133,15 +133,15 @@ const Login = () => {
               setPassword(event.currentTarget.value)
             }
           />
-          <Group justify="space-between" mt="lg">
-            <Checkbox label="自动登录" />
+          <Button fullWidth mt="xl" disabled={disabled} onClick={(event) => { void handleLogin(event); }}>
+            登录
+          </Button>
+          <Group justify="end" mt="lg">
+            {/*<Checkbox label="自动登录" />*/}
             <Anchor component="button" size="sm" onClick={()=>{void navigate('/forgotpassword');}}>
               忘记密码?
             </Anchor>
           </Group>
-          <Button fullWidth mt="xl" disabled={disabled} onClick={(event) => { void handleLogin(event); }}>
-            登录
-          </Button>
         </Paper>
       </Container>
     </div>
